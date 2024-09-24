@@ -1,0 +1,5 @@
+[settings]
+first_room = "index.hh3"
+rooms_folder = [ "./rooms" ]
+[meta]
+name = "Haunted House Example"
