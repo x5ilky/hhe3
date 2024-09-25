@@ -17,6 +17,7 @@ pub struct EnvData {
     pub title: TitleData, 
     pub current_room: String,
     pub display: DisplayData,
+    pub quit: bool,
 }
 
 #[derive(Clone, Default)]

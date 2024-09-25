@@ -6,7 +6,9 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.89"
 clap = { version = "4.5.18", features = ["derive"] }
+crossterm = "0.28.1"
 rand = "0.8.5"
+ratatui = "0.28.1"
 rust_lisp = "0.18.0"
 serde = { version = "1.0.210", features = ["derive"] }
 thiserror = "1.0.64"
