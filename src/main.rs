@@ -5,7 +5,7 @@ pub mod parser;
 pub mod project;
 
 use std::{
-    io::{stdout, Write}, process, rc::Rc, time::Duration
+    fs, io::{stdout, Write}, process, rc::Rc, time::Duration
 };
 
 use anyhow::Result;
@@ -16,14 +16,14 @@ use crossterm::{
     ExecutableCommand,
 };
 use environment::Environment;
-use parser::ProjectParser;
+use parser::{Metadata, ProjectParser};
 use ratatui::{
     backend,
     layout::{Constraint, Direction, Layout},
     prelude::CrosstermBackend,
-    style::{Modifier, Style, Styled},
-    symbols,
-    widgets::{Block, List, ListState, Paragraph},
+    style::{Modifier, Style, Styled, Stylize},
+    symbols::{self, border},
+    widgets::{Block, List, ListDirection, ListState, Paragraph},
     Frame, Terminal,
 };
 use rust_lisp::{interpreter::eval, parser::parse};
@@ -114,6 +114,28 @@ fn menu_input(state: &mut TuiState, selection: &ListState) -> Result<()> {
     Ok(())
 }
 
+struct ProjectDetails {
+    name: String,
+    author: Option<String>
+}
+
+fn refresh_projects(projects: &mut Vec<ProjectDetails>) {
+    projects.clear();
+    if fs::exists("./stories").unwrap() {
+        let dir = fs::read_dir("./stories").unwrap();
+        for folder in dir {
+            let content = fs::read_to_string(folder.unwrap().path().join("meta.toml"));
+            match content {
+                Ok(v) => {
+                    let v: Metadata = toml::from_str(&v).unwrap();
+                    projects.push(ProjectDetails { name: v.meta.name, author: v.meta.author });
+                },
+                Err(_) => {}
+            }
+        }
+    }
+}
+
 fn main() -> Result<()> {
     let backend = CrosstermBackend::new(stdout());
     let mut terminal = Terminal::new(backend)?;
@@ -123,6 +145,10 @@ fn main() -> Result<()> {
     let mut state = TuiState::Menu {
         selection: ListState::default(),
     };
+
+    let mut projects = vec![];
+
+    refresh_projects(&mut projects);
 
     stdout().execute(Clear(ClearType::All))?.flush()?;
 
@@ -135,7 +161,11 @@ fn main() -> Result<()> {
                     TuiState::Menu { selection } => {
                         menu_render(frame, &mut state, &selection.clone());
                     },
-                    TuiState::Folders { selection } => {}
+                    TuiState::Folders { selection } => {
+                        let mut sel = selection.clone();
+                        folders_render(frame, &mut state, &mut sel, &projects).unwrap();
+                        state = TuiState::Folders { selection: sel };
+                    }
                 })?;
                 if poll(Duration::from_millis(0))? {
                     match state.clone() {
@@ -145,6 +175,24 @@ fn main() -> Result<()> {
                 }
             }
         }
+    }
+    Ok(())
+}
+
+fn folders_render(frame: &mut Frame<'_>, state: &mut TuiState, clone: &mut ListState, projects: &Vec<ProjectDetails>) -> Result<()> {
+    let block = Block::bordered()
+        .border_set(border::ROUNDED)
+        .title("Projects");
+    if projects.is_empty() {
+        let widget = Paragraph::new("Either I couldn't find the stories/ folder\nor the folder was empty :(");
+        frame.render_widget(widget.block(block), frame.area());
+    } else {
+        let list = List::new(projects.iter().map(|v| v.name.as_str()).collect::<Vec<&str>>())
+            .block(block)
+            .direction(ListDirection::TopToBottom)
+            .highlight_style(Style::default().bold())
+            .highlight_symbol("> ");
+        frame.render_stateful_widget(list, frame.area(), clone);
     }
     Ok(())
 }
