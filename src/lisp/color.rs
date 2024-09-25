@@ -28,6 +28,12 @@ impl From<&Value> for Color {
     }
 }
 
+impl Color {
+    pub fn to_ratatui_color(self) -> ratatui::style::Color {
+        ratatui::style::Color::Rgb(self.0, self.1, self.2)
+    }
+}
+
 pub fn color_new(_env: Rc<RefCell<Env>>, args: Vec<Value>, _outside: Rc<RefCell<EnvData>>) -> Result<Value, RuntimeError> {
     let r = require_typed_arg::<i32>("color-new", &args, 0)?;
     let g = require_typed_arg::<i32>("color-new", &args, 1)?;

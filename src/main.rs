@@ -17,11 +17,12 @@ use crossterm::{
 };
 use environment::Environment;
 use parser::{Metadata, ProjectParser};
+use project::Project;
 use ratatui::{
     backend,
     layout::{Constraint, Direction, Layout},
     prelude::CrosstermBackend,
-    style::{Modifier, Style, Styled, Stylize},
+    style::{Color, Modifier, Style, Styled, Stylize},
     symbols::{self, border},
     widgets::{Block, List, ListDirection, ListState, Paragraph},
     Frame, Terminal,
@@ -43,6 +44,7 @@ enum Action {
 enum TuiState {
     Menu { selection: ListState },
     Folders { selection: ListState },
+    Story { story: Project }
 }
 
 fn menu_render(frame: &mut Frame, state: &mut TuiState, selection: &ListState) {
@@ -114,6 +116,50 @@ fn menu_input(state: &mut TuiState, selection: &ListState) -> Result<()> {
     Ok(())
 }
 
+fn folder_input(state: &mut TuiState, selection: &ListState) -> Result<()> {
+    match read()? {
+        Event::Key(ev) => match ev {
+            KeyEvent {
+                code: KeyCode::Char('j'),
+                kind: KeyEventKind::Press,
+                ..
+            } => {
+                let mut selection = selection.clone();
+                selection.select_next();
+
+                *state = TuiState::Folders { selection };
+            }
+            KeyEvent {
+                code: KeyCode::Char('k'),
+                kind: KeyEventKind::Press,
+                ..
+            } => {
+                let mut selection = selection.clone();
+                selection.select_previous();
+                *state = TuiState::Folders { selection };
+            }
+            KeyEvent {
+                code: KeyCode::Enter,
+                kind: KeyEventKind::Press,
+                ..
+            } => {
+                
+            }
+
+            KeyEvent {
+                code: KeyCode::Esc | KeyCode::Char('q'),
+                kind: KeyEventKind::Press,
+                ..
+            } => {
+                *state = TuiState::Menu { selection: ListState::default() }
+            }
+            
+            _ => {}
+        },
+        _ => {}
+    };
+    Ok(())
+}
 struct ProjectDetails {
     name: String,
     author: Option<String>
@@ -165,18 +211,53 @@ fn main() -> Result<()> {
                         let mut sel = selection.clone();
                         folders_render(frame, &mut state, &mut sel, &projects).unwrap();
                         state = TuiState::Folders { selection: sel };
+                    },
+                    TuiState::Story { story } => {
+                        story_render(frame, &story, &mut environment).unwrap();
                     }
                 })?;
                 if poll(Duration::from_millis(0))? {
                     match state.clone() {
                         TuiState::Menu { ref selection } => menu_input(&mut state, selection)?,
-                        TuiState::Folders { ref selection } => {}
+                        TuiState::Folders { ref selection } => folder_input(&mut state, selection)?,
+                        TuiState::Story { story } => story_input(&mut environment)?,
                     }
                 }
             }
         }
     }
     Ok(())
+}
+
+fn story_input(environment: &mut Environment) -> Result<()> {
+    todo!()
+}
+
+fn story_render(frame: &mut Frame, story: &Project, environment: &mut Environment) -> Result<()> {
+    let data = environment.data.borrow_mut();
+    let constraints = if data.title.show { 
+        vec![
+            Constraint::Length(1),
+            Constraint::Min(0),
+            Constraint::Length(1),
+        ]
+    } else {
+        vec![
+            Constraint::Length(0),
+            Constraint::Min(0),
+            Constraint::Length(1),
+        ]
+    };
+    let layout_vert = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints(constraints).split(frame.area());
+
+
+    let title_bar = Paragraph::new(data.title.content.clone()).set_style(Style::default().fg(data.title.color.to_ratatui_color()));
+
+    frame.render_widget(title_bar, layout_vert[0]);
+    
+    todo!()
 }
 
 fn folders_render(frame: &mut Frame<'_>, state: &mut TuiState, clone: &mut ListState, projects: &Vec<ProjectDetails>) -> Result<()> {
@@ -187,7 +268,7 @@ fn folders_render(frame: &mut Frame<'_>, state: &mut TuiState, clone: &mut ListS
         let widget = Paragraph::new("Either I couldn't find the stories/ folder\nor the folder was empty :(");
         frame.render_widget(widget.block(block), frame.area());
     } else {
-        let list = List::new(projects.iter().map(|v| v.name.as_str()).collect::<Vec<&str>>())
+        let list = List::new(projects.iter().map(|v| if v.author.is_some() { format!("{} - {}", v.name, v.author.clone().unwrap()) } else {v.name.clone()}).collect::<Vec<String>>())
             .block(block)
             .direction(ListDirection::TopToBottom)
             .highlight_style(Style::default().bold())
