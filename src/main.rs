@@ -38,11 +38,16 @@ fn main() -> Result<()>{
 
                 let environment = Environment::new().register_all();
                 
-                dbg!(&project);
                 let room = project.rooms.get(&project.meta.settings.first_room).unwrap();
                 let p = parse(&room.pre);
                 for roots in p {
-                    eval(Rc::clone(&environment.context), &roots.unwrap()).unwrap();
+                    let e = eval(Rc::clone(&environment.context), &roots.unwrap());
+                    match e {
+                        Ok(_) => {},
+                        Err(e) => {
+                            eprintln!("error: {}", e.msg);
+                        }
+                    }
                 }
             }
         }

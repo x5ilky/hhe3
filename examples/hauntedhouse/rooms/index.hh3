@@ -1,5 +1,7 @@
-(set-title "Index")
-(set-title-color (color green))
+(title-show true)
+(title-set-name "Index")
+(title-set-color (color 'green))
+(print "Hello, world!")
 ---
 `(set-speed 10)`
 You are in a haunted house.
