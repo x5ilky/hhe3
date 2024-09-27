@@ -10,5 +10,6 @@ There is a cabinet to the right of you.
 There is a bed behind you.
 There is a window on the left of you.
 The door is infront of you.
+`(post)`
 ---
 (option-goto "Cabinet" "goto")

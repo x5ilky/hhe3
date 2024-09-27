@@ -1,8 +1,8 @@
-use std::{cell::RefCell, rc::Rc, sync::{Arc, Mutex}};
+use std::{cell::RefCell, rc::Rc};
 
 use rust_lisp::{model::{Env, RuntimeError, Symbol, Value}, utils::{require_typed_arg, TypeName}};
 
-use crate::environment::{Container, EnvData};
+use crate::environment::Container;
 
 
 #[derive(Debug, Clone, Default, Copy)]

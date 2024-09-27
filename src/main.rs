@@ -9,7 +9,7 @@ use std::{
 };
 
 use anyhow::Result;
-use clap::{CommandFactory, Parser, Subcommand};
+use clap::{Parser, Subcommand};
 use crossterm::{
     event::{poll, read, Event, KeyCode, KeyEvent, KeyEventKind},
     terminal::{Clear, ClearType},
@@ -19,7 +19,7 @@ use environment::Environment;
 use parser::{Metadata, ProjectParser};
 use project::Project;
 use ratatui::{
-    layout::{Constraint, Direction, Layout}, prelude::CrosstermBackend, style::{Modifier, Style, Styled, Stylize}, symbols::{self, border}, text::{Line, Span, Text}, widgets::{Block, List, ListDirection, ListState, Paragraph}, Frame, Terminal
+    layout::{Constraint, Direction, Layout}, prelude::CrosstermBackend, style::{Modifier, Style, Styled, Stylize}, symbols::{self, border}, text::Text, widgets::{Block, List, ListDirection, ListState, Paragraph}, Frame, Terminal
 };
 use rust_lisp::{interpreter::eval, parser::parse};
 
@@ -38,7 +38,7 @@ enum Action {
 enum TuiState {
     Menu { selection: ListState },
     Folders { selection: ListState },
-    Story { story: Project }
+    Story
 }
 
 fn menu_render(frame: &mut Frame, state: &mut TuiState, selection: &ListState) {
@@ -143,7 +143,7 @@ fn folder_input(state: &mut TuiState, projects: &Vec<ProjectDetails>, selection:
                     let project = parser.parse().unwrap();
                     {environment.data.write().unwrap().project = project.clone();};
                     environment.load_room(&project.meta.settings.first_room);
-                    *state = TuiState::Story { story: project };
+                    *state = TuiState::Story;
                 }
             }
 
@@ -214,15 +214,15 @@ fn main() -> Result<()> {
                         folders_render(frame, &mut state, &mut sel, &projects).unwrap();
                         state = TuiState::Folders { selection: sel };
                     },
-                    TuiState::Story { story } => {
-                        story_render(frame, &story, &mut environment).unwrap();
+                    TuiState::Story => {
+                        story_render(frame, &mut environment).unwrap();
                     }
                 })?;
                 if poll(Duration::from_millis(0))? {
                     match state.clone() {
                         TuiState::Menu { ref selection } => menu_input(&mut state, selection)?,
                         TuiState::Folders { ref selection } => folder_input(&mut state, &projects, selection, &mut environment)?,
-                        TuiState::Story { story } => story_input(&mut environment)?,
+                        TuiState::Story { .. } => story_input(&mut environment)?,
                     }
                 }
                 
@@ -240,7 +240,7 @@ fn story_input(environment: &mut Environment) -> Result<()> {
     Ok(())
 }
 
-fn story_render(frame: &mut Frame, story: &Project, environment: &mut Environment) -> Result<()> {
+fn story_render(frame: &mut Frame, environment: &mut Environment) -> Result<()> {
     let data = environment.data.read().unwrap();
     let constraints = if data.title.show { 
         vec![

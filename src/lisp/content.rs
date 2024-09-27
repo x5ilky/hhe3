@@ -1,8 +1,8 @@
-use std::{cell::RefCell, rc::Rc, sync::{Arc, Mutex}};
+use std::{cell::RefCell, rc::Rc};
 
 use rust_lisp::{model::{Env, RuntimeError, Value}, utils::require_typed_arg};
 
-use crate::environment::{Container, EnvData};
+use crate::environment::Container;
 
 use super::color::Color;
 
