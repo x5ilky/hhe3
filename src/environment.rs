@@ -101,7 +101,7 @@ impl Environment {
         let (current_color, too_far) = {
             let data = data_arc.read().unwrap();
             let current_color = data.display.current_color.clone();
-            let too_far = data.display.displayed_index < this_room.content.len() - 1;
+            let too_far = data.display.content.0.len() < this_room.content.len() - 1;
             (current_color, too_far)
         };
 
@@ -275,6 +275,10 @@ impl Environment {
             use lisp::content::*;
             insert_func!(self, "delay-set", set_delay);
             insert_func!(self, "color-set", set_color);
+        }
+        {
+            use lisp::basic::*;
+            insert_func!(self, "post", run_post);
         }
         self
     }
