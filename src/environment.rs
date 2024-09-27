@@ -217,6 +217,7 @@ impl Environment {
         {
             use lisp::content::*;
             insert_func!(self, "delay-set", set_delay);
+            insert_func!(self, "color-set", set_color);
         }
         self
     }

@@ -5,7 +5,7 @@
 ---
 `(set-speed 10)`
 You are in a haunted house.
-`(set-color (color red))`
+`(color-set (color 'red))`
 There is a cabinet to the right of you.
 There is a bed behind you.
 There is a window on the left of you.
