@@ -150,7 +150,9 @@ fn parse_content(buf: &str) -> Vec<Content> {
             if in_lisp {
                 content.push(Content::Lisp(buffer));
             } else {
-                content.push(Content::Text(buffer));
+                buffer.chars().for_each(|ch| {
+                    content.push(Content::Char(ch));
+                });
             }
             buffer = String::new();
             in_lisp = !in_lisp;
@@ -161,7 +163,9 @@ fn parse_content(buf: &str) -> Vec<Content> {
     if in_lisp {
         content.push(Content::Lisp(buffer));
     } else {
-        content.push(Content::Text(buffer));
+        buffer.chars().for_each(|ch| {
+            content.push(Content::Char(ch));
+        });
     }
 
     content

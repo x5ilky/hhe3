@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::parser::Metadata;
 
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct Project {
     pub rooms: HashMap<String, Room>,
     pub author: String,
@@ -20,6 +20,6 @@ pub struct Room {
 
 #[derive(Clone, Debug)]
 pub enum Content {
-    Text(String),
+    Char(char),
     Lisp(String),
 }

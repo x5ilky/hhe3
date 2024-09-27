@@ -19,13 +19,7 @@ use environment::Environment;
 use parser::{Metadata, ProjectParser};
 use project::Project;
 use ratatui::{
-    backend,
-    layout::{Constraint, Direction, Layout},
-    prelude::CrosstermBackend,
-    style::{Color, Modifier, Style, Styled, Stylize},
-    symbols::{self, border},
-    widgets::{Block, List, ListDirection, ListState, Paragraph},
-    Frame, Terminal,
+    layout::{Constraint, Direction, Layout}, prelude::CrosstermBackend, style::{Modifier, Style, Styled, Stylize}, symbols::{self, border}, text::{Line, Span, Text}, widgets::{Block, List, ListDirection, ListState, Paragraph}, Frame, Terminal
 };
 use rust_lisp::{interpreter::eval, parser::parse};
 
@@ -116,7 +110,7 @@ fn menu_input(state: &mut TuiState, selection: &ListState) -> Result<()> {
     Ok(())
 }
 
-fn folder_input(state: &mut TuiState, selection: &ListState) -> Result<()> {
+fn folder_input(state: &mut TuiState, projects: &Vec<ProjectDetails>, selection: &ListState, environment: &mut Environment) -> Result<()> {
     match read()? {
         Event::Key(ev) => match ev {
             KeyEvent {
@@ -143,7 +137,14 @@ fn folder_input(state: &mut TuiState, selection: &ListState) -> Result<()> {
                 kind: KeyEventKind::Press,
                 ..
             } => {
-                
+                if selection.selected().is_some() {
+                    let p = &projects[selection.selected().unwrap()];
+                    let mut parser = ProjectParser::new(&p.path);
+                    let project = parser.parse().unwrap();
+                    environment.data.borrow_mut().project = project.clone();
+                    environment.load_room(&project.meta.settings.first_room);
+                    *state = TuiState::Story { story: project };
+                }
             }
 
             KeyEvent {
@@ -162,7 +163,8 @@ fn folder_input(state: &mut TuiState, selection: &ListState) -> Result<()> {
 }
 struct ProjectDetails {
     name: String,
-    author: Option<String>
+    author: Option<String>,
+    path: String
 }
 
 fn refresh_projects(projects: &mut Vec<ProjectDetails>) {
@@ -170,11 +172,12 @@ fn refresh_projects(projects: &mut Vec<ProjectDetails>) {
     if fs::exists("./stories").unwrap() {
         let dir = fs::read_dir("./stories").unwrap();
         for folder in dir {
-            let content = fs::read_to_string(folder.unwrap().path().join("meta.toml"));
+            let path = folder.unwrap().path(); 
+            let content = fs::read_to_string(path.clone().join("meta.toml"));
             match content {
                 Ok(v) => {
                     let v: Metadata = toml::from_str(&v).unwrap();
-                    projects.push(ProjectDetails { name: v.meta.name, author: v.meta.author });
+                    projects.push(ProjectDetails { name: v.meta.name, author: v.meta.author, path: path.to_str().unwrap().to_string() });
                 },
                 Err(_) => {}
             }
@@ -185,7 +188,6 @@ fn refresh_projects(projects: &mut Vec<ProjectDetails>) {
 fn main() -> Result<()> {
     let backend = CrosstermBackend::new(stdout());
     let mut terminal = Terminal::new(backend)?;
-    let mut cmd = Args::command();
     let args = Args::parse();
 
     let mut state = TuiState::Menu {
@@ -219,10 +221,12 @@ fn main() -> Result<()> {
                 if poll(Duration::from_millis(0))? {
                     match state.clone() {
                         TuiState::Menu { ref selection } => menu_input(&mut state, selection)?,
-                        TuiState::Folders { ref selection } => folder_input(&mut state, selection)?,
+                        TuiState::Folders { ref selection } => folder_input(&mut state, &projects, selection, &mut environment)?,
                         TuiState::Story { story } => story_input(&mut environment)?,
                     }
                 }
+                
+                environment.update();
             }
         }
     }
@@ -230,7 +234,7 @@ fn main() -> Result<()> {
 }
 
 fn story_input(environment: &mut Environment) -> Result<()> {
-    todo!()
+    Ok(())
 }
 
 fn story_render(frame: &mut Frame, story: &Project, environment: &mut Environment) -> Result<()> {
@@ -239,25 +243,45 @@ fn story_render(frame: &mut Frame, story: &Project, environment: &mut Environmen
         vec![
             Constraint::Length(1),
             Constraint::Min(0),
-            Constraint::Length(1),
+            Constraint::Length(3),
         ]
     } else {
         vec![
             Constraint::Length(0),
             Constraint::Min(0),
-            Constraint::Length(1),
+            Constraint::Length(3),
         ]
     };
     let layout_vert = Layout::default()
         .direction(Direction::Vertical)
         .constraints(constraints).split(frame.area());
+    let layout_hor = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints(vec![
+            Constraint::Fill(1),
+            Constraint::Fill(4),
+        ]).split(layout_vert[1]);
+    let displays = Paragraph::new(data.display.content.to_text());
+    let displays = displays.block(Block::bordered().border_set(border::ROUNDED));
 
+    let buttons: Vec<Text> = data.options.options.iter().map(|v| v.name.to_text()).collect();
+    let buttons_bar = List::new(buttons)
+        .direction(ListDirection::TopToBottom)
+        .highlight_symbol("<> ")
+        .highlight_style(Style::default().add_modifier(Modifier::BOLD))
+        .block(Block::bordered().border_set(border::DOUBLE));
 
     let title_bar = Paragraph::new(data.title.content.clone()).set_style(Style::default().fg(data.title.color.to_ratatui_color()));
 
+
     frame.render_widget(title_bar, layout_vert[0]);
+    frame.render_widget(displays, layout_hor[1]);
+    frame.render_widget(buttons_bar, layout_hor[0]);
+
+    let debug = Paragraph::new(data.debug.iter().rev().take(3).map(|v| v.clone()).collect::<Vec<String>>().join("\n"));
+    frame.render_widget(debug, layout_vert[2]);
     
-    todo!()
+    Ok(())
 }
 
 fn folders_render(frame: &mut Frame<'_>, state: &mut TuiState, clone: &mut ListState, projects: &Vec<ProjectDetails>) -> Result<()> {
