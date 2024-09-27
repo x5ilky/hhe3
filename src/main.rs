@@ -141,7 +141,7 @@ fn folder_input(state: &mut TuiState, projects: &Vec<ProjectDetails>, selection:
                     let p = &projects[selection.selected().unwrap()];
                     let mut parser = ProjectParser::new(&p.path);
                     let project = parser.parse().unwrap();
-                    environment.data.borrow_mut().project = project.clone();
+                    {environment.data.write().unwrap().project = project.clone();};
                     environment.load_room(&project.meta.settings.first_room);
                     *state = TuiState::Story { story: project };
                 }
@@ -204,7 +204,7 @@ fn main() -> Result<()> {
         Some(subc) => cli(subc)?,
         None => {
             let mut environment = Environment::new().register_all();
-            while !environment.data.borrow().quit {
+            loop {
                 terminal.draw(|frame| match state.clone() {
                     TuiState::Menu { selection } => {
                         menu_render(frame, &mut state, &selection.clone());
@@ -227,6 +227,9 @@ fn main() -> Result<()> {
                 }
                 
                 environment.update();
+                if environment.data.read().unwrap().quit {
+                    break;
+                }
             }
         }
     }
@@ -238,7 +241,7 @@ fn story_input(environment: &mut Environment) -> Result<()> {
 }
 
 fn story_render(frame: &mut Frame, story: &Project, environment: &mut Environment) -> Result<()> {
-    let data = environment.data.borrow_mut();
+    let data = environment.data.read().unwrap();
     let constraints = if data.title.show { 
         vec![
             Constraint::Length(1),

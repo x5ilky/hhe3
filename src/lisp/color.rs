@@ -1,8 +1,8 @@
-use std::{cell::RefCell, rc::Rc};
+use std::{cell::RefCell, rc::Rc, sync::{Arc, Mutex}};
 
 use rust_lisp::{model::{Env, RuntimeError, Symbol, Value}, utils::{require_typed_arg, TypeName}};
 
-use crate::environment::EnvData;
+use crate::environment::{Container, EnvData};
 
 
 #[derive(Debug, Clone, Default, Copy)]
@@ -34,7 +34,7 @@ impl Color {
     }
 }
 
-pub fn color_new(_env: Rc<RefCell<Env>>, args: Vec<Value>, _outside: Rc<RefCell<EnvData>>) -> Result<Value, RuntimeError> {
+pub fn color_new(_env: Rc<RefCell<Env>>, args: Vec<Value>, _outside: Container) -> Result<Value, RuntimeError> {
     let r = require_typed_arg::<i32>("color-new", &args, 0)?;
     let g = require_typed_arg::<i32>("color-new", &args, 1)?;
     let b = require_typed_arg::<i32>("color-new", &args, 2)?;
@@ -60,7 +60,7 @@ pub fn color_new(_env: Rc<RefCell<Env>>, args: Vec<Value>, _outside: Rc<RefCell<
 
     return Ok(Value::Foreign(Rc::new(Color (r, g, b))))
 }
-pub fn color(_env: Rc<RefCell<Env>>, args: Vec<Value>, _outside: Rc<RefCell<EnvData>>) -> Result<Value, RuntimeError> {
+pub fn color(_env: Rc<RefCell<Env>>, args: Vec<Value>, _outside: Container) -> Result<Value, RuntimeError> {
     let color = require_typed_arg::<&Symbol>("color", &args, 0)?;
 
     let color = match color.0.as_str() {

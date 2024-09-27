@@ -1,4 +1,8 @@
-use std::{cell::RefCell, rc::Rc};
+use std::{
+    cell::RefCell,
+    rc::Rc,
+    sync::{Arc, RwLock},
+};
 
 use ratatui::{
     style::Stylize,
@@ -6,17 +10,25 @@ use ratatui::{
     widgets::ListState,
 };
 use rust_lisp::{
-    default_env, interpreter::eval, model::{Env, Symbol, Value}, parser::parse
+    default_env,
+    interpreter::eval,
+    model::{Env, Symbol, Value},
+    parser::parse,
 };
 
-use crate::{lisp::{self, color::Color}, project::{Project, Room}};
+use crate::{
+    lisp::{self, color::Color},
+    project::{Project, Room},
+};
 
 pub struct Environment {
     pub context: Rc<RefCell<Env>>,
-    pub data: Rc<RefCell<EnvData>>,
+    pub data: Container,
     tick_passed: i64,
     pub prev_time: i64,
 }
+
+pub type Container = Arc<RwLock<EnvData>>;
 
 impl Environment {
     pub fn update(&mut self) {
@@ -25,14 +37,13 @@ impl Environment {
         let mut content_ticks = 0;
 
         {
-            let data = Rc::clone(&self.data);
-            let data = data.borrow();
+            let data = Arc::clone(&self.data);
+            let data = data.write().unwrap();
 
             if data.display.delay != 0 {
                 self.tick_passed += dt;
                 content_ticks = self.tick_passed / data.display.delay;
                 self.tick_passed %= data.display.delay;
-                
             };
         }
         for _ in 0..content_ticks {
@@ -44,46 +55,82 @@ impl Environment {
 
     pub fn load_room(&mut self, room: &String) {
         {
-            let data = Rc::clone(&self.data);
-            let mut data = data.borrow_mut();
+            let data = Arc::clone(&self.data);
+            let mut data = data.write().unwrap();
             data.current_room = room.clone();
+            data.display.displayed_index = 0;
         }
+
         let room_data = self.current_room();
+        {
+            let data = Arc::clone(&self.data);
+            let mut data = data.write().unwrap();
+            data.debug.push(format!("{:?}", room_data.content));
+        }
         for root in parse(&room_data.pre) {
-            eval(Rc::clone(&self.context), &root.expect("Failed to parse lisp")).expect(&format!("Failed to evaluate lisp block in pre section of room {}", room));
+            eval(
+                Rc::clone(&self.context),
+                &root.expect("Failed to parse lisp"),
+            )
+            .expect(&format!(
+                "Failed to evaluate lisp block in pre section of room {}",
+                room
+            ));
         }
     }
 
     fn current_room(&self) -> Room {
-        let data = Rc::clone(&self.data);
-        let data = data.borrow();
-        let room_data = data.project.rooms.get(&data.current_room).expect(&format!("Couldn't find the room {:?}", data.current_room));
+        let data = Arc::clone(&self.data);
+        let data = data.read().unwrap();
+        let room_data = data
+            .project
+            .rooms
+            .get(&data.current_room)
+            .expect(&format!("Couldn't find the room {:?}", data.current_room));
         room_data.clone()
     }
 
     fn tick_content(&mut self) {
         let this_room = self.current_room();
-        let data = Rc::clone(&self.data);
-        let mut data = data.borrow_mut();
+        let data_arc = Arc::clone(&self.data);
+        let value = {
+            let data = data_arc.read().unwrap();
+            &this_room.content[data.display.displayed_index]
+        };
 
-        if data.display.displayed_index < this_room.content.len() - 1 {
-            data.display.displayed_index += 1;
-        }
-        match &this_room.content[data.display.displayed_index] {
-            crate::project::Content::Char(c) => {
-                let new = (*c, data.display.current_color.clone());
-                data.display.content.0.push(new);
-            }
-            crate::project::Content::Lisp(lisp) => {
-                for root in parse(&lisp) {
-                    eval(Rc::clone(&self.context), &root.expect("Failed to parse lisp")).expect("Failed to evaluate lisp");
+        let (current_color, too_far) = {
+            let data = data_arc.read().unwrap();
+            let current_color = data.display.current_color.clone();
+            let too_far = data.display.displayed_index < this_room.content.len() - 1;
+            (current_color, too_far)
+        };
+
+        if too_far {
+            match value {
+                crate::project::Content::Char(c) => {
+                    let new = (*c, current_color);
+                    let mut data = data_arc.write().unwrap();
+                    data.display.content.0.push(new);
+                }
+                crate::project::Content::Lisp(lisp) => {
+                    for root in parse(&lisp) {
+                        eval(
+                            Rc::clone(&self.context),
+                            &root.expect("Failed to parse lisp"),
+                        )
+                        .expect("Failed to evaluate lisp");
+                    }
                 }
             }
         }
-        data.display.content =
-            Content(data.display.content.0[0..data.display.displayed_index].to_vec());
-        let d = format!("{}", data.display.delay);
-        data.debug.push(d);
+
+        {
+            let mut data = data_arc.write().unwrap();
+
+            if data.display.displayed_index < this_room.content.len() - 1 {
+                data.display.displayed_index += 1;
+            }
+        }
     }
 }
 
@@ -125,28 +172,38 @@ pub struct OptionDataSingle {
 #[derive(Clone, Default)]
 pub struct Content(pub Vec<(char, Color)>);
 impl Content {
-    pub fn to_spans(&self) -> Vec<Span> {
-        self.0
-            .iter()
-            .map(|v| Span::from(v.0.to_string()).fg(v.1.to_ratatui_color()))
-            .collect()
+    pub fn to_spans(&self) -> Vec<Vec<Span>> {
+        let mut lines = vec![];
+        let mut cur = vec![];
+        for (c, col) in &self.0 {
+            if *c != '\n' {
+                cur.push(Span::from(c.to_string()).fg(col.to_ratatui_color()));
+            } else {
+                lines.push(cur);
+                cur = vec![];
+            }
+        }
+        if !cur.is_empty() {
+            lines.push(cur);
+        }
+        return lines;
     }
-    pub fn to_line(&self) -> Line {
-        Line::from(self.to_spans())
+    pub fn to_line(&self) -> Vec<Line> {
+        self.to_spans().into_iter().map(|v| Line::from(v)).collect()
     }
     pub fn to_text(&self) -> Text {
-        Text::from(vec![self.to_line()])
+        Text::from(self.to_line())
     }
 }
 
 macro_rules! insert_func {
     ($self: expr, $lisp_name: expr, $func_name: ident) => {{
         use rust_lisp::model::Symbol;
-        let data = Rc::clone(&$self.data);
+        let data = Arc::clone(&$self.data);
         $self.context.borrow_mut().define(
             Symbol::from($lisp_name),
             Value::NativeClosure(Rc::new(RefCell::new(move |env, args| {
-                let d = Rc::clone(&data);
+                let d = Arc::clone(&data);
                 $func_name(env, args, d)
             }))),
         );
@@ -157,7 +214,7 @@ impl Environment {
     pub fn new() -> Environment {
         Environment {
             context: Rc::new(RefCell::new(default_env())),
-            data: Rc::new(RefCell::new(EnvData {
+            data: Arc::new(RwLock::new(EnvData {
                 ..Default::default()
             })),
             prev_time: chrono::offset::Utc::now().timestamp_millis(),
