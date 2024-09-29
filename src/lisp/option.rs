@@ -6,7 +6,7 @@ use rust_lisp::{
     utils::{require_arg, require_typed_arg},
 };
 
-use crate::environment::{Container, Content, ContentChar, OptionDataSingle};
+use crate::environment::{Container, Content, OptionDataSingle};
 
 pub fn option_reset(
     _env: Rc<RefCell<Env>>,
