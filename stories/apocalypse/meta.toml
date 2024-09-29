@@ -2,4 +2,4 @@
 first_room = "index"
 rooms_folder = ["./rooms"]
 [meta]
-name = "Haunted House Example"
+name = "Apocalypse"
