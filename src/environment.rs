@@ -349,6 +349,7 @@ impl Environment {
 
         ctx.define(Symbol::from("true"), Value::True);
         ctx.define(Symbol::from("false"), Value::False);
+        ctx.define(Symbol::from("dq"), Value::String("\"".to_string()));
 
         self
     }
@@ -404,6 +405,10 @@ impl Environment {
             insert_func!(self, "post", run_post);
             insert_func!(self, "debug", debug);
             insert_func!(self, "exit", exit);
+            {
+                use lisp::basic::string::*;
+                insert_func!(self, "string/format", format);
+            }
         }
         self
     }

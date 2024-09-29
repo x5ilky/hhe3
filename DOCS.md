@@ -53,8 +53,9 @@
 
 ## Basic
 
-| Function Name | Arguments                               | Description                         | Notes |
-| ------------- | --------------------------------------- | ----------------------------------- | ----- |
-| `post`        | Activate the *post* section of the room |                                     |       |
-| `debug`       | message: string                         | Push a message to the debug section |       |
-| `quit`        |                                         | Quit the program                    |       |
+| Function Name   | Arguments                               | Description                         | Notes                                                          |
+| --------------- | --------------------------------------- | ----------------------------------- | -------------------------------------------------------------- |
+| `post`          | Activate the *post* section of the room |                                     |                                                                |
+| `debug`         | message: string                         | Push a message to the debug section |                                                                |
+| `quit`          |                                         | Quit the program                    |                                                                |
+| `string/format` | format: string, ...args: any            | Format a string                     | Use %% to get representation of any object, use %s for strings |

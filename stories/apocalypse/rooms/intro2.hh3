@@ -1,0 +1,36 @@
+(r)
+---
+`(italic)`*switches to downstairs* *shows front door*
+`(r)`
+MC: "well, I guess I have to open it…"
+`(italic)`
+*door opens*
+
+*shows William at frontstep*
+`(r)`
+MC: "BRO WHAT ARE YOU DOING HERE?"
+William: "Dude I have no time to explain, let me in."
+`(italic)`
+
+*Fade into next scene transition*
+*Shows in living room with William*
+
+`(r)`
+William: "Have you not heard the news?"
+MC: "No? What is it?"
+William: "Pass me the remote"
+
+`(italic)`
+*Switches view to black tv, looking at a tv in the wall*
+*Blank tv turns to news reporting scene*
+
+*shows green zombie green thing*
+`(r)`
+News reporter: "THIS IS NOT A DRILL, EVERYONE STAY INSIDE, LOCK ALL POSSIBLE ENTRANCES TO YOUR HOUSE, AND BARRICADES WOULD BE RECOMMENDED. *points at top left of tv* THESE ARE THE ZOMBIES THAT ROAMS THE STREETS IN ALL OF AMERICA. THE ZOMBIES ARE HIGHLY INFESTED IN FLORIDA, GEORGIA AND TEXAS. PLEASE ALL AMERICAN CITIZENS BEWARE."
+MC: "WE LIVE IN TEXAS BRO!"
+William: "I know. The zombies have already broken into my house, so I fled to your’s. I’ll stay on watch for 3 hours, and we rotate. Go sleep now, bro."
+MC: "What about your supplies? You only have your laptop and phone.."
+William: "Doesn’t matter, I’ll deal with it. I think you should just sleep."
+`(post)`
+---
+(option/goto "Go to sleep" 'sleepstart)

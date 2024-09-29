@@ -59,3 +59,68 @@ pub fn exit(
 
     Ok(Value::NIL)
 }
+
+pub mod string {
+    use std::{cell::RefCell, rc::Rc};
+
+    use rust_lisp::{
+        model::{Env, RuntimeError, Value},
+        utils::require_typed_arg,
+    };
+
+    use crate::environment::Container;
+
+    pub fn format(
+        _env: Rc<RefCell<Env>>,
+        args: Vec<Value>,
+        _outside: Container,
+    ) -> Result<Value, RuntimeError> {
+        let format_string = require_typed_arg::<&String>("string/format", &args, 0)?;
+        let mut format_string: Vec<char> = format_string.chars().collect();
+
+        let mut iter = 0;
+        let mut new_str = String::new();
+        while !format_string.is_empty() {
+            let ch = format_string.remove(0);
+            if ch == '%' {
+                if !format_string.is_empty() {
+                    let format = format_string.remove(0);
+                    match format {
+                        '%' => {
+                            iter += 1;
+                            if args.len() < iter + 1 {
+                                return Err(RuntimeError {
+                                    msg: "Not enough arguments given for string/format".to_string(),
+                                });
+                            }
+                            new_str.push_str(&args[iter].to_string());
+                        }
+                        's' => {
+                            iter += 1;
+                            if args.len() < iter + 1 {
+                                return Err(RuntimeError {
+                                    msg: "Not enough arguments given for string/format".to_string(),
+                                });
+                            }
+                            new_str.push_str(match &args[iter] {
+                                Value::String(value) => value,
+                                _ => {
+                                    return Err(RuntimeError {
+                                        msg: "Expected string for %s format specifier".to_string(),
+                                    })
+                                }
+                            });
+                        }
+                        _ => {}
+                    }
+                } else {
+                    new_str.push(ch);
+                }
+            } else {
+                new_str.push(ch);
+            }
+        }
+
+        Ok(Value::String(new_str))
+    }
+}

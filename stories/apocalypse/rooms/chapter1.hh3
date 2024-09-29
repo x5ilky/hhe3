@@ -14,7 +14,7 @@ MC: "WHO IS RINGING THE BELL AT 12AM????"
 (r)
 (if (== igstart false) (option/action "Ignore it" 
     (lambda () 
-        (content/append "MC: 'UGHHH I CANT SLEEP I HAVE TO SEE WHAT IT IS'")
+        (content/append (string/format "MC: %sUGHHH I CANT SLEEP I HAVE TO SEE WHAT IT IS%s" dq dq))
         (set igstart true)
         (option/reset)
         (post)

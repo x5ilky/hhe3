@@ -27,7 +27,7 @@ use ratatui::{
     style::{Modifier, Style, Styled, Stylize},
     symbols::{self, border},
     text::Text,
-    widgets::{Block, List, ListDirection, ListState, Paragraph},
+    widgets::{Block, List, ListDirection, ListState, Paragraph, Wrap},
     Frame, Terminal,
 };
 use rust_lisp::{interpreter::eval, lisp, parser::parse};
@@ -348,7 +348,7 @@ fn story_render(frame: &mut Frame, environment: &mut Environment) -> Result<()> 
         .direction(Direction::Horizontal)
         .constraints(vec![Constraint::Fill(1), Constraint::Fill(4)])
         .split(layout_vert[1]);
-    let displays = Paragraph::new(data.display.content.to_text());
+    let displays = Paragraph::new(data.display.content.to_text()).wrap(Wrap { trim: false });
     let displays = displays
         .fg(data.display.display_fg.to_ratatui_color())
         .bg(data.display.display_bg.to_ratatui_color())
@@ -396,7 +396,7 @@ fn story_render(frame: &mut Frame, environment: &mut Environment) -> Result<()> 
     let title_bar = Paragraph::new(data.title.content.clone()).set_style(title_style);
 
     frame.render_widget(title_bar, layout_vert[0]);
-    frame.render_widget(displays, layout_hor[1]);
+    frame.render_widget(displays.scroll((0, 0)), layout_hor[1]);
 
     let mut selected_clone = data.options.selected.clone();
     frame.render_stateful_widget(buttons_bar, layout_hor[0], &mut selected_clone);
