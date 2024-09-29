@@ -1,16 +1,21 @@
 (defun r () 
     (reset)
+    (delay/set 20)
     (fg/set (color 'white))
     (bg/set (color 'black)))
 (delay/set 20)
 (r)
+(title/fg/set (color 'white))
+(title/name/set "Chapter select")
+(title/show true)
 ---
 Welcome to the `(bold)`apocalypse experience`(r)`.
 All chapters will be shown in the options menu.
+`(post)`
 ---
 (r)
 (bold)
-(option/goto "Chapter 1")
+(option/goto "Chapter 1" 'chapter1)
 (r)
 (bold)
 (option/action "Exit" (lambda () (exit)))

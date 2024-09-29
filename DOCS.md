@@ -28,6 +28,12 @@
 | `delay/set`       | ms: number   | Set the delay in ms between each character |       |
 | `fg/set`          | color: Color | Set the foreground color                   |       |
 | `bg/set`          | color: Color | Set the background color                   |       |
+| `display/fg/set`  | color: Color | Set the display foreground color           |       |
+| `display/bg/set`  | color: Color | Set the display background color           |       |
+| `display/ac/set`  | color: Color | Set the display accent color               |       |
+| `display/fg/get`  |              | Get the display foreground color           |       |
+| `display/bg/get`  |              | Get the display background color           |       |
+| `display/ac/get`  |              | Get the display accent color               |       |
 | `bold`            |              | Makes the content bold                     |       |
 | `italic`          |              | "                                          |       |
 | `crossed`         |              | "                                          |       |
@@ -35,6 +41,7 @@
 | `reset`           |              |                                            |       |
 | `content/clear`   |              | Clears the displayed content               |       |
 | `content/get-raw` |              | Get the raw text of the displayed content  |       |
+| `content/append`  |              | Append text to displayed content           |       |
 
 ## Option
 
@@ -50,3 +57,4 @@
 | ------------- | --------------------------------------- | ----------------------------------- | ----- |
 | `post`        | Activate the *post* section of the room |                                     |       |
 | `debug`       | message: string                         | Push a message to the debug section |       |
+| `quit`        |                                         | Quit the program                    |       |

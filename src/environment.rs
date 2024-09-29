@@ -391,6 +391,7 @@ impl Environment {
 
             insert_func!(self, "content/clear", content_clear);
             insert_func!(self, "content/get-raw", content_get_raw);
+            insert_func!(self, "content/append", content_append);
         }
         {
             use lisp::option::*;

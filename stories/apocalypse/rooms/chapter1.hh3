@@ -1,0 +1,23 @@
+(r)
+(title/name/set "Bedroom")
+(define igstart false)
+---
+`(italic)`
+*Wakes up in middle of night in bedroom environment*
+*Doorbell rings*
+*Doorbell rings more intensely*
+*doorbell rings more*
+`(r)`
+MC: "WHO IS RINGING THE BELL AT 12AM????"
+`(post)`
+---
+(r)
+(if (== igstart false) (option/action "Ignore it" 
+    (lambda () 
+        (content/append "MC: 'UGHHH I CANT SLEEP I HAVE TO SEE WHAT IT IS'")
+        (set igstart true)
+        (option/reset)
+        (post)
+    )
+))
+(option/goto "Go and check it out" 'intro2)
