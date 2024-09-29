@@ -47,3 +47,15 @@ pub fn debug(
 
     Ok(Value::NIL)
 }
+
+pub fn exit(
+    _env: Rc<RefCell<Env>>,
+    _args: Vec<Value>,
+    outside: Container,
+) -> Result<Value, RuntimeError> {
+    let mut outside = outside.write().unwrap();
+
+    outside.quit = true;
+
+    Ok(Value::NIL)
+}

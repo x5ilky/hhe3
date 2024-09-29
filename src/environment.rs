@@ -402,6 +402,7 @@ impl Environment {
             use lisp::basic::*;
             insert_func!(self, "post", run_post);
             insert_func!(self, "debug", debug);
+            insert_func!(self, "exit", exit);
         }
         self
     }
