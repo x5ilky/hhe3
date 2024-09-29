@@ -2,14 +2,9 @@
 (title-show true)
 (title-set-name "dfdfS")
 (title-set-color (color 'green))
+(define key false)
 ---
-SDFSD
-You are in a haunted house.
-`(color-set (color 'red))`
-There is a cabinet to the right of you.
-There is a window on the left of you.
-The door is infront of you.
-`(option-goto "Cabidf" 'goto)`
+Testing main page
 `(post)`
 ---
 (color-set (color 'white))

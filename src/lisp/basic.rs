@@ -1,8 +1,8 @@
-use std::{cell::RefCell, rc::Rc, sync::Arc};
+use std::{cell::RefCell, rc::Rc};
 
 use rust_lisp::{
     interpreter::eval,
-    model::{Env, RuntimeError, Symbol, Value},
+    model::{Env, RuntimeError, Value},
     parser::parse,
     utils::require_typed_arg,
 };

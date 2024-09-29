@@ -8,4 +8,7 @@ this is goto
 ---
 (color-set (color 'white))
 (option-goto "Cabinet" 'index)
+(if (== key false) 
+    (option-action "Get key" (lambda () (set key true) (option-reset) (post)))
+)
 (title-set-name "DFSDFDSSF")

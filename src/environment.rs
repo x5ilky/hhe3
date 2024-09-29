@@ -59,12 +59,6 @@ impl Environment {
         for _ in 0..content_ticks {
             self.tick_content();
         }
-        {
-            let data = Arc::clone(&self.data);
-            let mut data = data.write().unwrap();
-            let value = format!("{:?}", data.options.options);
-            // data.debug.push(value);
-        }
 
         self.prev_time = chrono::offset::Utc::now().timestamp_millis();
     }
@@ -293,6 +287,8 @@ impl Environment {
         {
             use lisp::option::*;
             insert_func!(self, "option-goto", option_goto);
+            insert_func!(self, "option-action", option_action);
+            insert_func!(self, "option-reset", option_reset);
         }
         {
             use lisp::basic::*;

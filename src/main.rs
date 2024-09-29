@@ -5,11 +5,10 @@ pub mod parser;
 pub mod project;
 
 use std::{
-    env, fs,
+    fs,
     io::{stdout, Write},
     process,
     rc::Rc,
-    sync::Arc,
     time::Duration,
 };
 
@@ -242,7 +241,7 @@ fn main() -> Result<()> {
                         story_render(frame, &mut environment).unwrap();
                     }
                 })?;
-                if poll(Duration::from_millis(0))? {
+                if poll(Duration::from_millis(2))? {
                     match state.clone() {
                         TuiState::Menu { ref selection } => menu_input(&mut state, selection)?,
                         TuiState::Folders { ref selection } => {
@@ -384,7 +383,7 @@ fn story_render(frame: &mut Frame, environment: &mut Environment) -> Result<()> 
 
 fn folders_render(
     frame: &mut Frame<'_>,
-    state: &mut TuiState,
+    _state: &mut TuiState,
     clone: &mut ListState,
     projects: &Vec<ProjectDetails>,
 ) -> Result<()> {
