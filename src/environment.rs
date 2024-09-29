@@ -26,6 +26,7 @@ pub struct Environment {
     pub data: Container,
     tick_passed: i64,
     pub prev_time: i64,
+    pub prev_room: String,
 }
 
 pub type Container = Arc<RwLock<EnvData>>;
@@ -35,6 +36,15 @@ impl Environment {
         let now = chrono::offset::Utc::now().timestamp_millis();
         let dt = now - self.prev_time;
         let mut content_ticks = 0;
+
+        let cur_room = {
+            let read: std::sync::RwLockReadGuard<'_, EnvData> = self.data.read().unwrap();
+            read.current_room.clone()
+        };
+        if self.prev_room != cur_room {
+            self.load_room(&cur_room);
+            self.prev_room = cur_room;
+        }
 
         {
             let data = Arc::clone(&self.data);
@@ -49,24 +59,28 @@ impl Environment {
         for _ in 0..content_ticks {
             self.tick_content();
         }
+        {
+            let data = Arc::clone(&self.data);
+            let mut data = data.write().unwrap();
+            let value = format!("{:?}", data.options.options);
+            // data.debug.push(value);
+        }
 
         self.prev_time = chrono::offset::Utc::now().timestamp_millis();
     }
 
-    pub fn load_room(&mut self, room: &String) {
+    fn load_room(&mut self, room: &String) {
         {
             let data = Arc::clone(&self.data);
             let mut data = data.write().unwrap();
             data.current_room = room.clone();
+            data.display.content.0 = vec![];
             data.display.displayed_index = 0;
+            data.options.options = vec![];
+            data.options.selected = ListState::default();
         }
 
         let room_data = self.current_room();
-        {
-            let data = Arc::clone(&self.data);
-            let mut data = data.write().unwrap();
-            data.debug.push(format!("{:?}", room_data.content));
-        }
         for root in parse(&room_data.pre) {
             eval(
                 Rc::clone(&self.context),
@@ -93,19 +107,18 @@ impl Environment {
     fn tick_content(&mut self) {
         let this_room = self.current_room();
         let data_arc = Arc::clone(&self.data);
-        let value = {
-            let data = data_arc.read().unwrap();
-            &this_room.content[data.display.displayed_index]
-        };
-
         let (current_color, too_far) = {
             let data = data_arc.read().unwrap();
             let current_color = data.display.current_color.clone();
-            let too_far = data.display.content.0.len() < this_room.content.len() - 1;
+            let too_far = data.display.displayed_index < this_room.content.len();
             (current_color, too_far)
         };
 
         if too_far {
+            let value = {
+                let data = data_arc.read().unwrap();
+                &this_room.content[data.display.displayed_index]
+            };
             match value {
                 crate::project::Content::Char(c) => {
                     let new = (*c, current_color);
@@ -127,14 +140,14 @@ impl Environment {
         {
             let mut data = data_arc.write().unwrap();
 
-            if data.display.displayed_index < this_room.content.len() - 1 {
+            if data.display.displayed_index < this_room.content.len() {
                 data.display.displayed_index += 1;
             }
         }
     }
 }
 
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct EnvData {
     pub title: TitleData,
     pub options: OptionData,
@@ -145,31 +158,31 @@ pub struct EnvData {
     pub quit: bool,
 }
 
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct TitleData {
     pub content: String,
     pub show: bool,
     pub color: Color,
 }
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct DisplayData {
     pub content: Content,
     pub delay: i64,
     pub displayed_index: usize,
     pub current_color: Color,
 }
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct OptionData {
     pub options: Vec<OptionDataSingle>,
     pub selected: ListState,
 }
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct OptionDataSingle {
     pub name: Content,
     pub action: Value,
 }
 
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct Content(pub Vec<(char, Color)>);
 impl Content {
     pub fn to_spans(&self) -> Vec<Vec<Span>> {
@@ -204,7 +217,7 @@ macro_rules! insert_func {
             Symbol::from($lisp_name),
             Value::NativeClosure(Rc::new(RefCell::new(move |env, args| {
                 let d = Arc::clone(&data);
-                $func_name(env, args, d)
+                $func_name(Rc::clone(&env), args, d)
             }))),
         );
     }};
@@ -219,6 +232,7 @@ impl Environment {
             })),
             prev_time: chrono::offset::Utc::now().timestamp_millis(),
             tick_passed: 0,
+            prev_room: "".to_string(),
         }
     }
 
@@ -277,8 +291,13 @@ impl Environment {
             insert_func!(self, "color-set", set_color);
         }
         {
+            use lisp::option::*;
+            insert_func!(self, "option-goto", option_goto);
+        }
+        {
             use lisp::basic::*;
             insert_func!(self, "post", run_post);
+            insert_func!(self, "debug", debug);
         }
         self
     }

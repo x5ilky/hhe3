@@ -1,7 +1,10 @@
-use std::{collections::HashMap, fs, path::PathBuf};
-use serde::{Deserialize, Serialize};
-use crate::{errors::HHEError, project::{Content, Project, Room}};
+use crate::{
+    errors::HHEError,
+    project::{Content, Project, Room},
+};
 use anyhow::Result;
+use serde::{Deserialize, Serialize};
+use std::{collections::HashMap, fs, path::PathBuf};
 
 pub struct ProjectParser {
     root: PathBuf,
@@ -24,7 +27,6 @@ pub struct MetadataInfo {
     pub author: Option<String>,
     pub name: String,
 }
-
 
 impl ProjectParser {
     pub fn new(folder_path: &str) -> ProjectParser {
@@ -82,7 +84,15 @@ impl ProjectParser {
                 self.parse_rooms_folder(proj, &fold.path());
             } else {
                 let room = self.parse_room(fold.path());
-                proj.rooms.insert(fold.file_name().into_string().unwrap(), room);
+                proj.rooms.insert(
+                    fold.path()
+                        .file_stem()
+                        .unwrap()
+                        .to_os_string()
+                        .into_string()
+                        .unwrap(),
+                    room,
+                );
             }
         }
     }
@@ -135,7 +145,6 @@ impl ProjectParser {
             post,
             content: output,
         }
-        
     }
 }
 

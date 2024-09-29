@@ -1,0 +1,11 @@
+(delay-set 10)
+(title-show true)
+(title-set-name "goto")
+(title-set-color (color 'green))
+---
+this is goto
+`(post)`
+---
+(color-set (color 'white))
+(option-goto "Cabinet" 'index)
+(title-set-name "DFSDFDSSF")

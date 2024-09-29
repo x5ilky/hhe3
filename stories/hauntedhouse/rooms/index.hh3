@@ -1,6 +1,6 @@
-(delay-set 40)
+(delay-set 10)
 (title-show true)
-(title-set-name "Index")
+(title-set-name "dfdfS")
 (title-set-color (color 'green))
 ---
 SDFSD
@@ -9,6 +9,9 @@ You are in a haunted house.
 There is a cabinet to the right of you.
 There is a window on the left of you.
 The door is infront of you.
+`(option-goto "Cabidf" 'goto)`
 `(post)`
 ---
-(option-goto "Cabinet" "goto")
+(color-set (color 'white))
+(option-goto "Cabinet" 'goto)
+(title-set-name "DFSDFDSSF")
