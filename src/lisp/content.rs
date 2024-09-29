@@ -20,7 +20,7 @@ pub fn set_delay(
     return Ok(Value::NIL);
 }
 
-pub fn set_fg(
+pub fn set_content_fg(
     _env: Rc<RefCell<Env>>,
     args: Vec<Value>,
     outside: Container,
@@ -30,7 +30,7 @@ pub fn set_fg(
     outside.display.current_fg = color;
     return Ok(Value::NIL);
 }
-pub fn set_bg(
+pub fn set_content_bg(
     _env: Rc<RefCell<Env>>,
     args: Vec<Value>,
     outside: Container,
@@ -39,6 +39,60 @@ pub fn set_bg(
     let mut outside = outside.write().unwrap();
     outside.display.current_bg = color;
     return Ok(Value::NIL);
+}
+pub fn set_fg(
+    _env: Rc<RefCell<Env>>,
+    args: Vec<Value>,
+    outside: Container,
+) -> Result<Value, RuntimeError> {
+    let color = require_typed_arg::<Color>("display/fg/set", &args, 0)?;
+    let mut outside = outside.write().unwrap();
+    outside.display.display_fg = color;
+    return Ok(Value::NIL);
+}
+pub fn get_fg(
+    _env: Rc<RefCell<Env>>,
+    _args: Vec<Value>,
+    outside: Container,
+) -> Result<Value, RuntimeError> {
+    let outside = outside.read().unwrap();
+    return Ok(Value::Foreign(Rc::new(outside.display.display_fg)));
+}
+pub fn set_bg(
+    _env: Rc<RefCell<Env>>,
+    args: Vec<Value>,
+    outside: Container,
+) -> Result<Value, RuntimeError> {
+    let color = require_typed_arg::<Color>("display/bg/set", &args, 0)?;
+    let mut outside = outside.write().unwrap();
+    outside.display.display_bg = color;
+    return Ok(Value::NIL);
+}
+pub fn get_bg(
+    _env: Rc<RefCell<Env>>,
+    _args: Vec<Value>,
+    outside: Container,
+) -> Result<Value, RuntimeError> {
+    let outside = outside.read().unwrap();
+    return Ok(Value::Foreign(Rc::new(outside.display.display_bg)));
+}
+pub fn set_ac(
+    _env: Rc<RefCell<Env>>,
+    args: Vec<Value>,
+    outside: Container,
+) -> Result<Value, RuntimeError> {
+    let color = require_typed_arg::<Color>("display/ac/set", &args, 0)?;
+    let mut outside = outside.write().unwrap();
+    outside.display.display_ac = color;
+    return Ok(Value::NIL);
+}
+pub fn get_ac(
+    _env: Rc<RefCell<Env>>,
+    _args: Vec<Value>,
+    outside: Container,
+) -> Result<Value, RuntimeError> {
+    let outside = outside.read().unwrap();
+    return Ok(Value::Foreign(Rc::new(outside.display.display_ac)));
 }
 pub fn bold(
     _env: Rc<RefCell<Env>>,

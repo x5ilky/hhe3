@@ -278,6 +278,11 @@ fn story_input(ev: Event, environment: &mut Environment) -> Result<()> {
                         } = key
                         {
                             write.options.selected.select_next();
+                            if write.options.selected.selected().unwrap()
+                                >= write.options.options.len()
+                            {
+                                write.options.selected.select(Some(0));
+                            }
                         } else {
                             write.options.selected.select_previous();
                         }
@@ -344,7 +349,15 @@ fn story_render(frame: &mut Frame, environment: &mut Environment) -> Result<()> 
         .constraints(vec![Constraint::Fill(1), Constraint::Fill(4)])
         .split(layout_vert[1]);
     let displays = Paragraph::new(data.display.content.to_text());
-    let displays = displays.block(Block::bordered().border_set(border::ROUNDED));
+    let displays = displays
+        .fg(data.display.display_fg.to_ratatui_color())
+        .bg(data.display.display_bg.to_ratatui_color())
+        .block(
+            Block::bordered()
+                .border_set(border::ROUNDED)
+                .fg(data.display.display_ac.to_ratatui_color())
+                .bg(data.display.display_bg.to_ratatui_color()),
+        );
 
     let buttons: Vec<Text> = data
         .options
@@ -356,7 +369,14 @@ fn story_render(frame: &mut Frame, environment: &mut Environment) -> Result<()> 
         .direction(ListDirection::TopToBottom)
         .highlight_symbol("<> ")
         .highlight_style(Style::default().add_modifier(Modifier::BOLD))
-        .block(Block::bordered().border_set(border::DOUBLE));
+        .block(
+            Block::bordered()
+                .border_set(border::DOUBLE)
+                .fg(data.display.display_ac.to_ratatui_color())
+                .bg(data.display.display_bg.to_ratatui_color()),
+        )
+        .fg(data.display.display_fg.to_ratatui_color())
+        .bg(data.display.display_bg.to_ratatui_color());
 
     let mut title_style = Style::default()
         .fg(data.title.fg.to_ratatui_color())

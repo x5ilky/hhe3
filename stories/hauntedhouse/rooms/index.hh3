@@ -2,6 +2,7 @@
 (title/show true)
 (title/name/set "dfdfS")
 (title/fg/set (color 'green))
+(display/ac/set (color 'white))
 (define key false)
 ---
 Testing main page

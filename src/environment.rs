@@ -185,6 +185,9 @@ pub struct DisplayData {
     pub displayed_index: usize,
     pub current_fg: Color,
     pub current_bg: Color,
+    pub display_fg: Color,
+    pub display_bg: Color,
+    pub display_ac: Color,
     pub bold: bool,
     pub italic: bool,
     pub crossed: bool,
@@ -371,13 +374,20 @@ impl Environment {
         {
             use lisp::content::*;
             insert_func!(self, "delay/set", set_delay);
-            insert_func!(self, "fg/set", set_fg);
-            insert_func!(self, "bg/set", set_bg);
+            insert_func!(self, "fg/set", set_content_fg);
+            insert_func!(self, "bg/set", set_content_bg);
             insert_func!(self, "bold", bold);
             insert_func!(self, "italic", italic);
             insert_func!(self, "crossed", crossed);
             insert_func!(self, "underline", underline);
             insert_func!(self, "reset", reset);
+
+            insert_func!(self, "display/fg/set", set_fg);
+            insert_func!(self, "display/bg/set", set_bg);
+            insert_func!(self, "display/ac/set", set_ac);
+            insert_func!(self, "display/fg/get", get_fg);
+            insert_func!(self, "display/bg/get", get_bg);
+            insert_func!(self, "display/ac/get", get_ac);
 
             insert_func!(self, "content/clear", content_clear);
             insert_func!(self, "content/get-raw", content_get_raw);
