@@ -1,14 +1,14 @@
-(delay-set 10)
-(title-show true)
-(title-set-name "goto")
-(title-set-color (color 'green))
+(delay/set 10)
+(title/show true)
+(title/set-name "goto")
+(title/set-color (color 'green))
 ---
 this is goto
 `(post)`
 ---
-(color-set (color 'white))
-(option-goto "Cabinet" 'index)
+(color/set (color 'white))
+(option/goto "Cabinet" 'index)
 (if (== key false) 
-    (option-action "Get key" (lambda () (set key true) (option-reset) (post)))
+    (option/action "Get key" (lambda () (set key true) (option/reset) (post)))
 )
-(title-set-name "DFSDFDSSF")
+(title/set-name "DFSDFDSSF")

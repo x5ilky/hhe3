@@ -258,8 +258,8 @@ impl Environment {
         redefine!("is_procedure", "is-procedure");
         redefine!("is_pair", "is-pair");
 
-        redefine!("hash_get", "hash-get");
-        redefine!("hash_set", "hash-set");
+        redefine!("hash_get", "hash/get");
+        redefine!("hash_set", "hash/set");
 
         ctx.define(Symbol::from("true"), Value::True);
         ctx.define(Symbol::from("false"), Value::False);
@@ -270,25 +270,27 @@ impl Environment {
     pub fn register_pre(self) -> Environment {
         {
             use lisp::title::*;
-            insert_func!(self, "title-set-name", set_name);
-            insert_func!(self, "title-set-color", set_color);
-            insert_func!(self, "title-show", show);
+            insert_func!(self, "title/set-name", set_name);
+            insert_func!(self, "title/set-color", set_color);
+            insert_func!(self, "title/show", show);
         }
         {
             use lisp::color::*;
-            insert_func!(self, "color-new", color_new);
+            insert_func!(self, "color/new", color_new);
             insert_func!(self, "color", color);
         }
         {
             use lisp::content::*;
-            insert_func!(self, "delay-set", set_delay);
-            insert_func!(self, "color-set", set_color);
+            insert_func!(self, "delay/set", set_delay);
+            insert_func!(self, "color/set", set_color);
+
+            insert_func!(self, "content/clear", content_clear);
         }
         {
             use lisp::option::*;
-            insert_func!(self, "option-goto", option_goto);
-            insert_func!(self, "option-action", option_action);
-            insert_func!(self, "option-reset", option_reset);
+            insert_func!(self, "option/goto", option_goto);
+            insert_func!(self, "option/action", option_action);
+            insert_func!(self, "option/reset", option_reset);
         }
         {
             use lisp::basic::*;

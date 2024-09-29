@@ -30,8 +30,8 @@ pub fn option_goto(
     let outside_ar = Arc::clone(&outside);
     let mut out = outside_ar.write().unwrap();
 
-    let name = require_typed_arg::<&String>("option-goto", &args, 0)?;
-    let next_room = require_typed_arg::<&Symbol>("option-goto", &args, 1)?.clone();
+    let name = require_typed_arg::<&String>("option/goto", &args, 0)?;
+    let next_room = require_typed_arg::<&Symbol>("option/goto", &args, 1)?.clone();
 
     let content = Content(
         name.chars()
@@ -60,8 +60,8 @@ pub fn option_action(
     let outside_ar = Arc::clone(&outside);
     let mut out = outside_ar.write().unwrap();
 
-    let name = require_typed_arg::<&String>("option-action", &args, 0)?;
-    let action = require_arg("option-action", &args, 1)?.clone();
+    let name = require_typed_arg::<&String>("option/action", &args, 0)?;
+    let action = require_arg("option/action", &args, 1)?.clone();
 
     let content = Content(
         name.chars()
