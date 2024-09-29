@@ -1,0 +1,71 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "HH3 lang",
+  "patterns": [
+    {
+      "include": "#program"
+    }
+  ],
+  "repository": {
+    "lisp": {
+      "include": "source.clojure"
+    },
+    "program": {
+      "patterns": [
+        {
+          "begin": "^",
+          "end": "---",
+          "patterns": [
+            {
+              "include": "#lisp"
+            }
+          ]
+        },
+        {
+          "begin": "---",
+          "end": "$",
+          "patterns": [
+            {
+              "include": "#lisp"
+            }
+          ]
+        },
+        {
+          "begin": "---",
+          "end": "---",
+          "patterns": [
+            {
+              "match": "`(.*?)`",
+              "patterns": [
+                {
+                  "captures": {
+                    "1": {
+                      "patterns": [
+                        {
+                          "include": "#lisp"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "2": {
+        "patterns": [
+          {
+            "match": "`(.*?)`",
+            "patterns": [
+              {
+                "include": "#lisp"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "scopeName": "source.hh3"
+}

@@ -1,0 +1,35 @@
+{
+  "name": "hhe3-syntax-highlight",
+  "displayName": "HHE3 syntax highlight",
+  "description": "",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.93.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "hh3",
+        "aliases": [
+          "HH3 lang",
+          "hh3"
+        ],
+        "extensions": [
+          ".hh3",
+          ".hhe"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "hh3",
+        "scopeName": "source.hh3",
+        "path": "./syntaxes/hh3.tmLanguage.json"
+      }
+    ]
+  }
+}
