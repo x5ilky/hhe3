@@ -1,12 +1,11 @@
 (delay/set 10)
 (title/show true)
-(title/set-name "dfdfS")
-(title/set-color (color 'green))
+(title/name/set "dfdfS")
+(title/fg/set (color 'green))
 (define key false)
 ---
 Testing main page
 `(post)`
 ---
-(color/set (color 'white))
+(fg/set (color 'white))
 (option/goto "Cabinet" 'goto)
-(title/set-name "DFSDFDSSF")

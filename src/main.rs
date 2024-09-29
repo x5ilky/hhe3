@@ -358,8 +358,22 @@ fn story_render(frame: &mut Frame, environment: &mut Environment) -> Result<()> 
         .highlight_style(Style::default().add_modifier(Modifier::BOLD))
         .block(Block::bordered().border_set(border::DOUBLE));
 
-    let title_bar = Paragraph::new(data.title.content.clone())
-        .set_style(Style::default().fg(data.title.color.to_ratatui_color()));
+    let mut title_style = Style::default()
+        .fg(data.title.fg.to_ratatui_color())
+        .bg(data.title.bg.to_ratatui_color());
+    if data.title.bold {
+        title_style = title_style.bold()
+    };
+    if data.title.italic {
+        title_style = title_style.italic()
+    };
+    if data.title.crossed {
+        title_style = title_style.crossed_out()
+    };
+    if data.title.underline {
+        title_style = title_style.underlined()
+    };
+    let title_bar = Paragraph::new(data.title.content.clone()).set_style(title_style);
 
     frame.render_widget(title_bar, layout_vert[0]);
     frame.render_widget(displays, layout_hor[1]);

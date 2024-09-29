@@ -101,11 +101,18 @@ impl Environment {
     fn tick_content(&mut self) {
         let this_room = self.current_room();
         let data_arc = Arc::clone(&self.data);
-        let (current_color, too_far) = {
+        let (fg, bg, bold, italic, crossed, underline, too_far) = {
             let data = data_arc.read().unwrap();
-            let current_color = data.display.current_color.clone();
             let too_far = data.display.displayed_index < this_room.content.len();
-            (current_color, too_far)
+            (
+                data.display.current_fg,
+                data.display.current_bg,
+                data.display.bold,
+                data.display.italic,
+                data.display.crossed,
+                data.display.underline,
+                too_far,
+            )
         };
 
         if too_far {
@@ -115,7 +122,15 @@ impl Environment {
             };
             match value {
                 crate::project::Content::Char(c) => {
-                    let new = (*c, current_color);
+                    let new = ContentChar {
+                        bg,
+                        fg,
+                        bold,
+                        italic,
+                        underline,
+                        crossed,
+                        ch: *c,
+                    };
                     let mut data = data_arc.write().unwrap();
                     data.display.content.0.push(new);
                 }
@@ -156,15 +171,40 @@ pub struct EnvData {
 pub struct TitleData {
     pub content: String,
     pub show: bool,
-    pub color: Color,
+    pub fg: Color,
+    pub bg: Color,
+    pub bold: bool,
+    pub italic: bool,
+    pub underline: bool,
+    pub crossed: bool,
 }
 #[derive(Clone, Default, Debug)]
 pub struct DisplayData {
     pub content: Content,
     pub delay: i64,
     pub displayed_index: usize,
-    pub current_color: Color,
+    pub current_fg: Color,
+    pub current_bg: Color,
+    pub bold: bool,
+    pub italic: bool,
+    pub crossed: bool,
+    pub underline: bool,
 }
+
+impl DisplayData {
+    pub fn to_content_char(&self, ch: char) -> ContentChar {
+        ContentChar {
+            bg: self.current_bg,
+            fg: self.current_fg,
+            bold: self.bold,
+            italic: self.italic,
+            crossed: self.crossed,
+            underline: self.underline,
+            ch,
+        }
+    }
+}
+
 #[derive(Clone, Default, Debug)]
 pub struct OptionData {
     pub options: Vec<OptionDataSingle>,
@@ -176,15 +216,54 @@ pub struct OptionDataSingle {
     pub action: Value,
 }
 
+#[derive(Clone, Debug)]
+pub struct ContentChar {
+    pub ch: char,
+    pub fg: Color,
+    pub bg: Color,
+    pub bold: bool,
+    pub italic: bool,
+    pub underline: bool,
+    pub crossed: bool,
+}
+impl Default for ContentChar {
+    fn default() -> Self {
+        Self {
+            ch: ' ',
+            bold: false,
+            fg: Color::default(),
+            bg: Color::default(),
+            crossed: false,
+            italic: false,
+            underline: false,
+        }
+    }
+}
+
 #[derive(Clone, Default, Debug)]
-pub struct Content(pub Vec<(char, Color)>);
+pub struct Content(pub Vec<ContentChar>);
 impl Content {
     pub fn to_spans(&self) -> Vec<Vec<Span>> {
         let mut lines = vec![];
         let mut cur = vec![];
-        for (c, col) in &self.0 {
-            if *c != '\n' {
-                cur.push(Span::from(c.to_string()).fg(col.to_ratatui_color()));
+        for ch in &self.0 {
+            if ch.ch != '\n' {
+                let mut value = Span::from(ch.ch.to_string())
+                    .fg(ch.fg.to_ratatui_color())
+                    .bg(ch.bg.to_ratatui_color());
+                if ch.bold {
+                    value = value.bold()
+                };
+                if ch.italic {
+                    value = value.italic()
+                };
+                if ch.crossed {
+                    value = value.crossed_out()
+                };
+                if ch.underline {
+                    value = value.underlined()
+                };
+                cur.push(value);
             } else {
                 lines.push(cur);
                 cur = vec![];
@@ -200,6 +279,10 @@ impl Content {
     }
     pub fn to_text(&self) -> Text {
         Text::from(self.to_line())
+    }
+    pub fn to_raw(&self) -> String {
+        let chars = self.0.iter().map(|v| v.ch).collect();
+        chars
     }
 }
 
@@ -270,8 +353,14 @@ impl Environment {
     pub fn register_pre(self) -> Environment {
         {
             use lisp::title::*;
-            insert_func!(self, "title/set-name", set_name);
-            insert_func!(self, "title/set-color", set_color);
+            insert_func!(self, "title/name/set", set_name);
+            insert_func!(self, "title/fg/set", set_fg);
+            insert_func!(self, "title/bg/set", set_bg);
+            insert_func!(self, "title/bold", bold);
+            insert_func!(self, "title/italic", italic);
+            insert_func!(self, "title/crossed", crossed);
+            insert_func!(self, "title/underline", underline);
+            insert_func!(self, "title/reset", reset);
             insert_func!(self, "title/show", show);
         }
         {
@@ -282,9 +371,16 @@ impl Environment {
         {
             use lisp::content::*;
             insert_func!(self, "delay/set", set_delay);
-            insert_func!(self, "color/set", set_color);
+            insert_func!(self, "fg/set", set_fg);
+            insert_func!(self, "bg/set", set_bg);
+            insert_func!(self, "bold", bold);
+            insert_func!(self, "italic", italic);
+            insert_func!(self, "crossed", crossed);
+            insert_func!(self, "underline", underline);
+            insert_func!(self, "reset", reset);
 
             insert_func!(self, "content/clear", content_clear);
+            insert_func!(self, "content/get-raw", content_get_raw);
         }
         {
             use lisp::option::*;

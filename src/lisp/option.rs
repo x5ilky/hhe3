@@ -6,7 +6,7 @@ use rust_lisp::{
     utils::{require_arg, require_typed_arg},
 };
 
-use crate::environment::{Container, Content, OptionDataSingle};
+use crate::environment::{Container, Content, ContentChar, OptionDataSingle};
 
 pub fn option_reset(
     _env: Rc<RefCell<Env>>,
@@ -35,7 +35,7 @@ pub fn option_goto(
 
     let content = Content(
         name.chars()
-            .map(|v| (v, out.display.current_color.clone()))
+            .map(|v| out.display.to_content_char(v))
             .collect(),
     );
 
@@ -65,7 +65,7 @@ pub fn option_action(
 
     let content = Content(
         name.chars()
-            .map(|v| (v, out.display.current_color.clone()))
+            .map(|v| out.display.to_content_char(v))
             .collect(),
     );
 
