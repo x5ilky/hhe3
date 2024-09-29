@@ -1,0 +1,16 @@
+(defun r () 
+    (reset)
+    (fg/set (color 'white))
+    (bg/set (color 'black)))
+(delay/set 20)
+(r)
+---
+Welcome to the `(bold)`apocalypse experience`(r)`.
+All chapters will be shown in the options menu.
+---
+(r)
+(bold)
+(option/goto "Chapter 1")
+(r)
+(bold)
+(option/action "Exit" (lambda () (exit)))
