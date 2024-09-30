@@ -1,0 +1,5 @@
+(defun clear ()
+    (content/clear)
+    (content/scroll/set 0)
+    (reset)
+)

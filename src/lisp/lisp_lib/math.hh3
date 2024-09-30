@@ -1,0 +1,13 @@
+(defun square (x) 
+    (* x x))
+(defun cube (x)
+    (* x x x))
+(define PI 3.14159265359)
+(define TAU (* 2 PI))
+
+(defun pow (b e) 
+    (math/pow b e))
+(defun sqrt (x)
+    (pow x (/ 1 2)))
+(defun cbrt (x)
+    (pow x (/ 1 3)))

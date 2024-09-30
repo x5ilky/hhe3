@@ -172,6 +172,8 @@ pub fn import(
     let module: &Symbol = require_typed_arg("import", &args, 0)?;
     let source = match module.0.as_str() {
         "escape" => include_str!("./lisp_lib/escape.hh3"),
+        "math" => include_str!("./lisp_lib/math.hh3"),
+        "quick" => include_str!("./lisp_lib/quick.hh3"),
         _ => "",
     };
 
@@ -181,4 +183,15 @@ pub fn import(
     }
 
     Ok(Value::NIL)
+}
+
+pub fn math_pow(
+    _env: Rc<RefCell<Env>>,
+    args: Vec<Value>,
+    _outside: Container,
+) -> Result<Value, RuntimeError> {
+    let base: f32 = require_typed_arg("math/pow", &args, 0)?;
+    let exponent: f32 = require_typed_arg("math/pow", &args, 1)?;
+
+    return Ok(Value::Float(base.powf(exponent)));
 }

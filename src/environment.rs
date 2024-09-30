@@ -403,6 +403,8 @@ impl Environment {
 
             insert_func!(self, "content/scroll/down", content_scroll_down);
             insert_func!(self, "content/scroll/up", content_scroll_up);
+            insert_func!(self, "content/scroll/set", content_scroll_set);
+            insert_func!(self, "content/scroll/get", content_scroll_get);
         }
         {
             use lisp::option::*;
@@ -419,6 +421,9 @@ impl Environment {
 
             insert_func!(self, "room/set", room_set);
             insert_func!(self, "room/get", room_get);
+
+            insert_func!(self, "math/pow", math_pow);
+
             {
                 use lisp::basic::string::*;
                 insert_func!(self, "string/format", format);
