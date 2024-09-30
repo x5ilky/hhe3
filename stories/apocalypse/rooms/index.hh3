@@ -8,6 +8,7 @@
 (title/fg/set (color 'white))
 (title/name/set "Chapter select")
 (title/show true)
+(display/ac/set (color 'white))
 ---
 Welcome to the `(bold)`apocalypse experience`(r)`.
 All chapters will be shown in the options menu.
