@@ -1,0 +1,45 @@
+(r)
+---
+*after a while*
+William: "Halfway there!"
+MC: "Only 25 more kilometers to go! But these headlights are REALLY using up    our oil…"
+*engine stops*
+Both: "Oh no…"
+
+MC: "We’re sitting birds right now."
+William: "Oh no the zombies are swarming in!"
+MC: "Then let’s shoot them!"
+*after a while of shooting*
+MC: "Finally, We’ve killed all of them."
+William: "I’ve run out of rounds."
+MC: "Oh no me too"
+William: "And we are surrounded with corpses!"
+MC: "We gotta make a run for it…"
+
+After a bit of running…
+
+MC: "Wait… are those zombies ahead of us?"
+William: "QUICK! TURN!"
+However, the two quickly realized that zombies were coming from all angles. Fortunately, you both fight a way out of the hoard and outrun the zombies.
+
+William: *HUFF… HUFFFFFF*
+MC: *HUFF, HUFF* So… `(delay/set 500)`  `(r)`ugh… `(delay/set 500)`  `(r)` we… got… out…
+"But I’ve got something to tell you," they both said in unison.
+MC: "No…"
+You pull up your sleeve, and William rolls up his right leg.
+William: "Dammit………"
+You both look at each other
+MC: "Do you think zombies are conscious of what they’re doing, but just can’t control their bodies?"
+William: "Maybe… but I can’t afford to watch myself eat you, man."
+You both turn the other way and start stumbling forward.
+MC: "So this is it?"
+William: "Heh, yeah. Yeah, it is."
+After a bit more stumbling, you plop down flat on the ground. After a few seconds, you also hear another plop from the other direction. A grin appears on your face as a memory flashes before your eyes.
+
+It was a 6th grade sleepover, with you and William in the same bed, laughing, laying flat out on the bed. A voice rang out amongst one of you, saying "LAST ONE TO FALL ASLEEP WINS!"
+I guess we’re both going to sleep this time.
+
+And just like that, I let the overwhelming darkness of the night consume me.
+`(post)`
+---
+(option/action "Retry" (lambda () (deathscreen)))

@@ -1,0 +1,18 @@
+(save)
+---
+MC: "I mean yeah, better be safe than sorry."
+William: "Sure! Do we have a ride there?"
+MC: "Yeah I have a car."
+
+You and William get in the car.
+
+William: "Do you even know how to drive this thing?"
+MC: "A little bit."
+William: "Ok sure, I guess it’s better than not knowing how to drive."
+William: "We should turn on the headlights."
+MC: "But we don’t have that much oil, but we might be able to flee from other zombies if they rush at us…"
+`(post)`
+---
+
+(option/goto "Turn on headlights" 'turnonhl1)
+(option/goto "Turn off headlights" 'turnoffhl1)

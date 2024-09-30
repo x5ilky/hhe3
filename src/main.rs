@@ -285,6 +285,12 @@ fn story_input(ev: Event, environment: &mut Environment) -> Result<()> {
                             }
                         } else {
                             write.options.selected.select_previous();
+                            if let Some(v) = write.options.selected.selected() {
+                                if v == (usize::MAX - 1) {
+                                    let len = write.options.options.len();
+                                    write.options.selected.select(Some(len - 1));
+                                }
+                            }
                         }
                     }
                 }

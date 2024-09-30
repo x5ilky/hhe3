@@ -1,0 +1,45 @@
+(save)
+(r)
+---
+MC: "What is going on downstairs?"
+William: "Oh crap, they’re getting through the back door, get the guns ready! We need to fight!"
+
+`(italic)`*door bursts open*`(r)`
+Both: "FIRE!!!"
+
+News Reporter: "WARNING EVERYONE, DEAD ZOMBIES LEAVE A SMELL THAT WILL ATTRACT MORE ZOMBIES, IF YOU HAVE ZOMBIES CORPSES, PLEASE DISPOSE OF THEM IMMEDIATELY!"
+
+William: "How are we going to clean up that many zombies!?"
+MC: "What about, we don’t…"
+William: "What do you mean we don’t."
+MC: "I might just have a secret bunker."
+William: "Why do you have that?"
+*Sees more zombies in the distance*
+MC: "Stop talking WE NEED TO RUN!"
+You and William run for the secret bunker.
+
+`(delay/set 150) (fg/set (color/new 194 99 4)) (bold) (italic)`*In Bunker*`(r)`
+
+MC: "Here we are, my secret bunker."
+William: "Won’t the zombies follow us here?"
+MC: "No they won’t, when I noticed them they were looking away from us, they were probably too dumb to notice."
+William: "I’m not so sure, but I’ll trust you."
+MC: "Yeah… Oop- the lights turned on!"
+William: "Oh wow! That’s uh… interesting."
+William: "Anyways, where's the food?"
+MC: "Lemme check, I haven’t been here for a while."
+MC: "Ummm, I have some bad news…"
+William: "What is it?"
+MC: "We only have like 10 days of food."
+William: "That’s not good…"
+MC: "And we only have bread."
+William: "Ok, that's bad. Should we go get some supplies then?"
+MC: "That's not very viable, the nearest grocery store is 50km away."
+William: "Should we go?"
+
+`(post)`
+
+---
+
+(option/goto "Get Groceries" 'gogetsome)
+(option/goto "Stay Home" 'stayhomeandrest)
