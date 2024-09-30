@@ -185,3 +185,30 @@ pub fn content_append(
 
     Ok(Value::NIL)
 }
+
+pub fn content_scroll_down(
+    _env: Rc<RefCell<Env>>,
+    _args: Vec<Value>,
+    outside: Container,
+) -> Result<Value, RuntimeError> {
+    let outside = Arc::clone(&outside);
+    let mut write = outside.write().unwrap();
+    write.display.scroll += 1;
+    let value = write.display.scroll.to_string();
+    write.debug.push(value);
+    Ok(Value::NIL)
+}
+
+pub fn content_scroll_up(
+    _env: Rc<RefCell<Env>>,
+    _args: Vec<Value>,
+    outside: Container,
+) -> Result<Value, RuntimeError> {
+    let outside = Arc::clone(&outside);
+    let mut write = outside.write().unwrap();
+    write.display.scroll -= 1;
+    if write.display.scroll < 0 {
+        write.display.scroll = 0;
+    }
+    Ok(Value::NIL)
+}

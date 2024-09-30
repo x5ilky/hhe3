@@ -348,7 +348,11 @@ fn story_render(frame: &mut Frame, environment: &mut Environment) -> Result<()> 
         .direction(Direction::Horizontal)
         .constraints(vec![Constraint::Fill(1), Constraint::Fill(4)])
         .split(layout_vert[1]);
-    let displays = Paragraph::new(data.display.content.to_text()).wrap(Wrap { trim: false });
+    let scroll = data.display.scroll as usize;
+    let displays = Paragraph::new(Text::from(
+        data.display.content.to_line()[scroll..].to_vec(),
+    ))
+    .wrap(Wrap { trim: false });
     let displays = displays
         .fg(data.display.display_fg.to_ratatui_color())
         .bg(data.display.display_bg.to_ratatui_color())

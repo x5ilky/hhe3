@@ -192,6 +192,7 @@ pub struct DisplayData {
     pub italic: bool,
     pub crossed: bool,
     pub underline: bool,
+    pub scroll: i32,
 }
 
 impl DisplayData {
@@ -393,6 +394,9 @@ impl Environment {
             insert_func!(self, "content/clear", content_clear);
             insert_func!(self, "content/get-raw", content_get_raw);
             insert_func!(self, "content/append", content_append);
+
+            insert_func!(self, "content/scroll/down", content_scroll_down);
+            insert_func!(self, "content/scroll/up", content_scroll_up);
         }
         {
             use lisp::option::*;
