@@ -2,7 +2,7 @@ use std::{cell::RefCell, rc::Rc};
 
 use rust_lisp::{
     interpreter::eval,
-    model::{Env, RuntimeError, Value},
+    model::{Env, RuntimeError, Symbol, Value},
     parser::parse,
     utils::require_typed_arg,
 };
@@ -123,4 +123,27 @@ pub mod string {
 
         Ok(Value::String(new_str))
     }
+}
+
+pub fn room_set(
+    _env: Rc<RefCell<Env>>,
+    args: Vec<Value>,
+    outside: Container,
+) -> Result<Value, RuntimeError> {
+    let room = require_typed_arg::<&Symbol>("room/set", &args, 0)?;
+    let mut outside = outside.write().unwrap();
+
+    outside.current_room = room.0.clone();
+
+    Ok(Value::NIL)
+}
+
+pub fn room_get(
+    _env: Rc<RefCell<Env>>,
+    _args: Vec<Value>,
+    outside: Container,
+) -> Result<Value, RuntimeError> {
+    let outside = outside.read().unwrap();
+
+    Ok(Value::String(outside.current_room.clone()))
 }

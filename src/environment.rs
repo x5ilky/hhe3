@@ -415,6 +415,9 @@ impl Environment {
             insert_func!(self, "post", run_post);
             insert_func!(self, "debug", debug);
             insert_func!(self, "exit", exit);
+
+            insert_func!(self, "room/set", room_set);
+            insert_func!(self, "room/get", room_get);
             {
                 use lisp::basic::string::*;
                 insert_func!(self, "string/format", format);
