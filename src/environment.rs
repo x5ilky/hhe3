@@ -1,5 +1,6 @@
 use std::{
     cell::RefCell,
+    collections::HashMap,
     rc::Rc,
     sync::{Arc, RwLock},
 };
@@ -161,12 +162,17 @@ pub struct EnvData {
     pub title: TitleData,
     pub options: OptionData,
     pub current_room: String,
+    pub listeners: ListenerData,
     pub display: DisplayData,
     pub project: Project,
     pub debug: Vec<String>,
     pub quit: bool,
 }
 
+#[derive(Clone, Default, Debug)]
+pub struct ListenerData {
+    pub keyboard_char: HashMap<i32, Value>,
+}
 #[derive(Clone, Default, Debug)]
 pub struct TitleData {
     pub content: String,
@@ -413,6 +419,11 @@ impl Environment {
                 use lisp::basic::string::*;
                 insert_func!(self, "string/format", format);
             }
+        }
+        {
+            use lisp::listener::*;
+            insert_func!(self, "listener/keyboard/char", keyboard_char_listener);
+            insert_func!(self, "listener/clear", listener_clear);
         }
         self
     }

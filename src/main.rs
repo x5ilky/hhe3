@@ -30,7 +30,7 @@ use ratatui::{
     widgets::{Block, List, ListDirection, ListState, Paragraph, Wrap},
     Frame, Terminal,
 };
-use rust_lisp::{interpreter::eval, lisp, parser::parse};
+use rust_lisp::{interpreter::eval, lisp, model::Value, parser::parse};
 
 #[derive(Parser, Debug)]
 struct Args {
@@ -319,6 +319,25 @@ fn story_input(ev: Event, environment: &mut Environment) -> Result<()> {
                 }
                 _ => {}
             };
+            match key {
+                KeyEvent {
+                    code: KeyCode::Char(c),
+                    kind: KeyEventKind::Press,
+                    ..
+                } => {
+                    let listeners = environment.data.read().unwrap().listeners.clone();
+                    for (_, cb) in listeners.keyboard_char {
+                        eval(
+                            Rc::clone(&environment.context),
+                            &lisp! {
+                                ( {cb} {Value::String(c.to_string())} )
+                            },
+                        )
+                        .expect("Failed to evaluate expression in keyboard_char listener");
+                    }
+                }
+                _ => {}
+            }
         }
         _ => {}
     }
@@ -348,11 +367,10 @@ fn story_render(frame: &mut Frame, environment: &mut Environment) -> Result<()> 
         .direction(Direction::Horizontal)
         .constraints(vec![Constraint::Fill(1), Constraint::Fill(4)])
         .split(layout_vert[1]);
+    let line = data.display.content.to_line();
     let scroll = data.display.scroll as usize;
-    let displays = Paragraph::new(Text::from(
-        data.display.content.to_line()[scroll..].to_vec(),
-    ))
-    .wrap(Wrap { trim: false });
+    let scroll = scroll.clamp(0, line.len());
+    let displays = Paragraph::new(Text::from(line[scroll..].to_vec())).wrap(Wrap { trim: false });
     let displays = displays
         .fg(data.display.display_fg.to_ratatui_color())
         .bg(data.display.display_bg.to_ratatui_color())
