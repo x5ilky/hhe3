@@ -146,10 +146,10 @@ pub fn room_set(
     args: Vec<Value>,
     outside: Container,
 ) -> Result<Value, RuntimeError> {
-    let room = require_typed_arg::<&Symbol>("room/set", &args, 0)?;
+    let room = require_typed_arg::<&String>("room/set", &args, 0)?;
     let mut outside = outside.write().unwrap();
 
-    outside.current_room = room.0.clone();
+    outside.current_room = room.clone();
 
     Ok(Value::NIL)
 }
@@ -162,4 +162,23 @@ pub fn room_get(
     let outside = outside.read().unwrap();
 
     Ok(Value::String(outside.current_room.clone()))
+}
+
+pub fn import(
+    _env: Rc<RefCell<Env>>,
+    args: Vec<Value>,
+    _outside: Container,
+) -> Result<Value, RuntimeError> {
+    let module: &Symbol = require_typed_arg("import", &args, 0)?;
+    let source = match module.0.as_str() {
+        "escape" => include_str!("./lisp_lib/escape.hh3"),
+        _ => "",
+    };
+
+    let parsed = parse(source);
+    for root in parsed {
+        eval(Rc::clone(&_env), &root.unwrap()).expect("Failed to evaluate module");
+    }
+
+    Ok(Value::NIL)
 }

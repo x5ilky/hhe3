@@ -1,0 +1,13 @@
+---
+
+MC: "Yeah, it’s probably normal in a time like this."
+You hear extremely weird noises down stairs
+
+MC: "Let’s just go check it o- OH NO"
+You see a pack of zombies
+You try to get back in, but the zombies saw you
+You lay in despair on your bed as you breathe your last dying breaths
+`(post)`
+---
+
+(option/action "Retry" (lambda () (deathscreen)))

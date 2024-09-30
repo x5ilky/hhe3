@@ -1,0 +1,11 @@
+(save)
+---
+MC: "Alright bro… goodnight."
+`(italic)`
+*fades into bedroom*
+`(r)`
+MC: "W-what was that noise? It sounds muffled…"
+`(post)`
+---
+(option/goto "Ignore it" 'sleep2)
+(option/goto "Ask William" 'sleep3)
