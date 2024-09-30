@@ -48,15 +48,21 @@ impl Environment {
             self.prev_room = cur_room;
         }
 
-        {
-            let data = Arc::clone(&self.data);
-            let data = data.write().unwrap();
+        if self.prev_room != "" {
+            let this_room = self.current_room();
+            {
+                let data = Arc::clone(&self.data);
+                let mut data = data.write().unwrap();
 
-            if data.display.delay != 0 {
-                self.tick_passed += dt;
-                content_ticks = self.tick_passed / data.display.delay;
-                self.tick_passed %= data.display.delay;
-            };
+                let too_far = data.display.displayed_index < this_room.content.len();
+                if data.display.delay != 0 && too_far {
+                    self.tick_passed += dt;
+                    content_ticks = self.tick_passed / data.display.delay;
+                    self.tick_passed %= data.display.delay;
+                };
+                let v = format!("{}", self.tick_passed);
+                data.debug.push(v);
+            }
         }
         for _ in 0..content_ticks {
             self.tick_content();
