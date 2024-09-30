@@ -194,8 +194,6 @@ pub fn content_scroll_down(
     let outside = Arc::clone(&outside);
     let mut write = outside.write().unwrap();
     write.display.scroll += 1;
-    let value = write.display.scroll.to_string();
-    write.debug.push(value);
     Ok(Value::NIL)
 }
 
