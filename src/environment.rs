@@ -13,8 +13,7 @@ use ratatui::{
 use rust_lisp::{
     default_env,
     interpreter::eval,
-    lisp,
-    model::{Env, Lambda, Symbol, Value},
+    model::{Env, Symbol, Value},
     parser::parse,
     utils::require_typed_arg,
 };
