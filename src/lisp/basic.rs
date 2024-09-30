@@ -123,6 +123,22 @@ pub mod string {
 
         Ok(Value::String(new_str))
     }
+
+    pub fn escape(
+        _env: Rc<RefCell<Env>>,
+        args: Vec<Value>,
+        _outside: Container,
+    ) -> Result<Value, RuntimeError> {
+        let ch: &String = require_typed_arg("string/escape", &args, 0)?;
+        let ch = match ch.as_str() {
+            "n" => "\n",
+            "t" => "\t",
+            "r" => "\r",
+            "0" => "\0",
+            _ => ch.as_str(),
+        };
+        return Ok(Value::String(ch.to_string()));
+    }
 }
 
 pub fn room_set(

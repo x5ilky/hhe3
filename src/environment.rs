@@ -421,6 +421,7 @@ impl Environment {
             {
                 use lisp::basic::string::*;
                 insert_func!(self, "string/format", format);
+                insert_func!(self, "string/escape", escape);
             }
         }
         {
