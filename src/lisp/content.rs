@@ -1,7 +1,7 @@
 use std::{cell::RefCell, rc::Rc, sync::Arc};
 
 use rust_lisp::{
-    model::{Env, RuntimeError, Value},
+    model::{Env, IntType, RuntimeError, Value},
     utils::require_typed_arg,
 };
 
@@ -14,7 +14,7 @@ pub fn set_delay(
     args: Vec<Value>,
     outside: Container,
 ) -> Result<Value, RuntimeError> {
-    let delay = require_typed_arg::<i32>("delay/set", &args, 0)?;
+    let delay = require_typed_arg::<IntType>("delay/set", &args, 0)?;
     let mut outside = outside.write().unwrap();
     outside.display.delay = delay as i64;
     return Ok(Value::NIL);
@@ -216,13 +216,13 @@ pub fn content_scroll_set(
     args: Vec<Value>,
     outside: Container,
 ) -> Result<Value, RuntimeError> {
-    let mut amount = require_typed_arg::<i32>("content/scroll/set", &args, 0)?;
+    let mut amount = require_typed_arg::<IntType>("content/scroll/set", &args, 0)?;
     let outside = Arc::clone(&outside);
     let mut write = outside.write().unwrap();
     if amount < 0 {
         amount = 0;
     }
-    write.display.scroll = amount;
+    write.display.scroll = amount as i32;
     Ok(Value::NIL)
 }
 
@@ -233,5 +233,5 @@ pub fn content_scroll_get(
 ) -> Result<Value, RuntimeError> {
     let outside = Arc::clone(&outside);
     let read = outside.read().unwrap();
-    Ok(Value::Int(read.display.scroll))
+    Ok(Value::Int(read.display.scroll as IntType))
 }

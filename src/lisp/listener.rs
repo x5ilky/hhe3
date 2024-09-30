@@ -1,7 +1,7 @@
 use std::{cell::RefCell, rc::Rc, sync::Arc};
 
 use rust_lisp::{
-    model::{Env, RuntimeError, Value},
+    model::{Env, IntType, RuntimeError, Value},
     utils::{require_arg, require_typed_arg},
 };
 
@@ -17,7 +17,7 @@ pub fn keyboard_char_listener(
     let mut outside = outside.write().unwrap();
     let i = outside.listeners.keyboard_char.len();
     outside.listeners.keyboard_char.insert(i as i32, cb.clone());
-    return Ok(Value::Int(i as i32));
+    return Ok(Value::Int(i as IntType));
 }
 
 pub fn listener_clear(
@@ -25,9 +25,9 @@ pub fn listener_clear(
     args: Vec<Value>,
     outside: Container,
 ) -> Result<Value, RuntimeError> {
-    let cb = require_typed_arg::<i32>("listener/clear", &args, 0)?;
+    let cb = require_typed_arg::<IntType>("listener/clear", &args, 0)?;
     let outside = Arc::clone(&outside);
     let mut outside = outside.write().unwrap();
-    outside.listeners.keyboard_char.remove(&cb);
+    outside.listeners.keyboard_char.remove(&(cb as i32));
     return Ok(Value::NIL);
 }

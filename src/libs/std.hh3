@@ -1,0 +1,5 @@
+(import 'escape)
+(import 'math)
+
+(defun time/now () 
+    (intrinsic 'time))

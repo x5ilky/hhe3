@@ -1,7 +1,7 @@
 use std::{cell::RefCell, rc::Rc};
 
 use rust_lisp::{
-    model::{Env, RuntimeError, Symbol, Value},
+    model::{Env, IntType, RuntimeError, Symbol, Value},
     utils::{require_typed_arg, TypeName},
 };
 
@@ -44,9 +44,9 @@ pub fn color_new(
     args: Vec<Value>,
     _outside: Container,
 ) -> Result<Value, RuntimeError> {
-    let r = require_typed_arg::<i32>("color/new", &args, 0)?;
-    let g = require_typed_arg::<i32>("color/new", &args, 1)?;
-    let b = require_typed_arg::<i32>("color/new", &args, 2)?;
+    let r = require_typed_arg::<IntType>("color/new", &args, 0)?;
+    let g = require_typed_arg::<IntType>("color/new", &args, 1)?;
+    let b = require_typed_arg::<IntType>("color/new", &args, 2)?;
 
     let r: u8 = match u8::try_from(r) {
         Ok(v) => v,

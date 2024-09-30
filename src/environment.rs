@@ -13,8 +13,10 @@ use ratatui::{
 use rust_lisp::{
     default_env,
     interpreter::eval,
-    model::{Env, Symbol, Value},
+    lisp,
+    model::{Env, Lambda, Symbol, Value},
     parser::parse,
+    utils::require_typed_arg,
 };
 
 use crate::{
@@ -304,7 +306,7 @@ macro_rules! insert_func {
             Symbol::from($lisp_name),
             Value::NativeClosure(Rc::new(RefCell::new(move |env, args| {
                 let d = Arc::clone(&data);
-                $func_name(Rc::clone(&env), args, d)
+                $func_name(env, args, d)
             }))),
         );
     }};
@@ -417,7 +419,33 @@ impl Environment {
             insert_func!(self, "post", run_post);
             insert_func!(self, "debug", debug);
             insert_func!(self, "exit", exit);
-            insert_func!(self, "import", import);
+            insert_func!(self, "to-string", to_string);
+            // insert_func!(self, "import", import);
+
+            self.context.borrow_mut().define(
+                Symbol::from("import"),
+                Value::NativeFunc(|env, args| {
+                    let module: &Symbol = require_typed_arg("import", &args, 0)?;
+                    let source = match module.0.as_str() {
+                        "escape" => include_str!("./libs/escape.hh3"),
+                        "math" => include_str!("./libs/math.hh3"),
+                        "quick" => include_str!("./libs/quick.hh3"),
+                        "std" => include_str!("./libs/std.hh3"),
+                        _ => "",
+                    };
+
+                    let parsed: Result<Vec<Value>, _> = parse(source).collect();
+                    let parsed = parsed.unwrap();
+
+                    for root in parsed {
+                        eval(env.clone(), &root).expect("Failed to evaluate module");
+                    }
+
+                    Ok(Value::NIL)
+                }),
+            );
+
+            insert_func!(self, "intrinsic", intrinsic);
 
             insert_func!(self, "room/set", room_set);
             insert_func!(self, "room/get", room_get);

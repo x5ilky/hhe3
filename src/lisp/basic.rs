@@ -4,7 +4,7 @@ use rust_lisp::{
     interpreter::eval,
     model::{Env, RuntimeError, Symbol, Value},
     parser::parse,
-    utils::require_typed_arg,
+    utils::{require_arg, require_typed_arg},
 };
 
 use crate::environment::Container;
@@ -164,26 +164,28 @@ pub fn room_get(
     Ok(Value::String(outside.current_room.clone()))
 }
 
-pub fn import(
-    _env: Rc<RefCell<Env>>,
-    args: Vec<Value>,
-    _outside: Container,
-) -> Result<Value, RuntimeError> {
-    let module: &Symbol = require_typed_arg("import", &args, 0)?;
-    let source = match module.0.as_str() {
-        "escape" => include_str!("./lisp_lib/escape.hh3"),
-        "math" => include_str!("./lisp_lib/math.hh3"),
-        "quick" => include_str!("./lisp_lib/quick.hh3"),
-        _ => "",
-    };
+// pub fn import(
+//     env: Rc<RefCell<Env>>,
+//     args: Vec<Value>,
+//     _outside: Container,
+// ) -> Result<Value, RuntimeError> {
+//     let module: &Symbol = require_typed_arg("import", &args, 0)?;
+//     let source = match module.0.as_str() {
+//         "escape" => include_str!("./lisp_lib/escape.hh3"),
+//         "math" => include_str!("./lisp_lib/math.hh3"),
+//         "quick" => include_str!("./lisp_lib/quick.hh3"),
+//         "std" => include_str!("./lisp_lib/std.hh3"),
+//         _ => "",
+//     };
 
-    let parsed = parse(source);
-    for root in parsed {
-        eval(Rc::clone(&_env), &root.unwrap()).expect("Failed to evaluate module");
-    }
+//     let parsed: Result<Vec<Value>, _> = parse(source).collect();
+//     let parsed = parsed.unwrap();
+//     for root in parsed {
+//         eval(env.clone(), &root).expect("Failed to evaluate module");
+//     }
 
-    Ok(Value::NIL)
-}
+//     Ok(Value::NIL)
+// }
 
 pub fn math_pow(
     _env: Rc<RefCell<Env>>,
@@ -194,4 +196,36 @@ pub fn math_pow(
     let exponent: f32 = require_typed_arg("math/pow", &args, 1)?;
 
     return Ok(Value::Float(base.powf(exponent)));
+}
+
+pub fn intrinsic(
+    _env: Rc<RefCell<Env>>,
+    args: Vec<Value>,
+    _outside: Container,
+) -> Result<Value, RuntimeError> {
+    let module: &Symbol = require_typed_arg("intrinsic", &args, 0)?;
+    let source = match module.0.as_str() {
+        "time" => Value::Int(chrono::Utc::now().timestamp_millis()),
+        _ => Value::NIL,
+    };
+
+    Ok(source)
+}
+
+pub fn to_string(
+    _env: Rc<RefCell<Env>>,
+    args: Vec<Value>,
+    _outside: Container,
+) -> Result<Value, RuntimeError> {
+    let value = require_arg("to-string", &args, 0)?;
+
+    let stringified = match value {
+        Value::False => "false".to_string(),
+        Value::True => "true".to_string(),
+        Value::Float(f) => f.to_string(),
+        Value::Int(i) => i.to_string(),
+        Value::String(s) => s.to_string(),
+        _ => value.type_name().to_string(),
+    };
+    return Ok(Value::String(stringified));
 }

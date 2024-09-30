@@ -1,3 +1,7 @@
+(import 'std)
+(eval (
+    (eval (lambda () (+ 1 2) ))
+))
 (define save-room (room/get))
 (defun r () 
     (reset)
@@ -33,6 +37,7 @@ All chapters will be shown in the options menu.
 `(post)`
 Press `(italic)`j`(r)` to scroll down and press `(italic)`k`(r)` to scroll up.
 Auto scroll is not yet implemented :)))
+`(content/append (to-string (time/now)))`
 ---
 (r)
 (bold)
