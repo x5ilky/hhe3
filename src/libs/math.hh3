@@ -1,13 +1,21 @@
+;;;; std/math.hh3
+
+;;; square (x: number): number
 (defun square (x) 
     (* x x))
+;;; cube (x: number): number
 (defun cube (x)
     (* x x x))
+
 (define PI 3.14159265359)
 (define TAU (* 2 PI))
 
+;;; pow (base: number, exponent: number): number
 (defun pow (b e) 
     (math/pow b e))
+;;; sqrt (x: number): number
 (defun sqrt (x)
     (pow x (/ 1 2)))
+;;; cbrt (x: number): number
 (defun cbrt (x)
     (pow x (/ 1 3)))

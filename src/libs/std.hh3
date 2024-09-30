@@ -1,5 +1,9 @@
+;;;; std/std.hh3
+
 (import 'escape)
 (import 'math)
 
+;;; time/now (): number
+;;; returns unix timestamp in millis
 (defun time/now () 
     (intrinsic 'time))

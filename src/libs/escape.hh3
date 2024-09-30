@@ -1,3 +1,5 @@
+;;;; std/escape.hh3
+
 (define \n (string/escape "n"))
 (define \t (string/escape "t"))
 (define \r (string/escape "r"))
