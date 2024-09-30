@@ -212,3 +212,28 @@ pub fn content_scroll_up(
     }
     Ok(Value::NIL)
 }
+
+pub fn content_scroll_set(
+    _env: Rc<RefCell<Env>>,
+    args: Vec<Value>,
+    outside: Container,
+) -> Result<Value, RuntimeError> {
+    let mut amount = require_typed_arg::<i32>("content/scroll/set", &args, 0)?;
+    let outside = Arc::clone(&outside);
+    let mut write = outside.write().unwrap();
+    if amount < 0 {
+        amount = 0;
+    }
+    write.display.scroll = amount;
+    Ok(Value::NIL)
+}
+
+pub fn content_scroll_get(
+    _env: Rc<RefCell<Env>>,
+    _args: Vec<Value>,
+    outside: Container,
+) -> Result<Value, RuntimeError> {
+    let outside = Arc::clone(&outside);
+    let read = outside.read().unwrap();
+    Ok(Value::Int(read.display.scroll))
+}
