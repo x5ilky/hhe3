@@ -2,7 +2,7 @@ use std::{cell::RefCell, rc::Rc};
 
 use rust_lisp::{
     interpreter::eval,
-    model::{Env, RuntimeError, Symbol, Value},
+    model::{Env, IntType, RuntimeError, Symbol, Value},
     parser::parse,
     utils::{require_arg, require_typed_arg},
 };
@@ -41,8 +41,6 @@ pub fn debug(
 ) -> Result<Value, RuntimeError> {
     let arg = require_typed_arg::<&String>("debug", &args, 0)?;
     let mut outside = outside.write().unwrap();
-    println!("{:?}", outside);
-
     outside.debug.push(arg.to_owned());
 
     Ok(Value::NIL)
@@ -206,6 +204,14 @@ pub fn intrinsic(
     let module: &Symbol = require_typed_arg("intrinsic", &args, 0)?;
     let source = match module.0.as_str() {
         "time" => Value::Int(chrono::Utc::now().timestamp_millis()),
+        "to-ascii" => {
+            let i: IntType = require_typed_arg("intrinsic", &args, 1)?;
+            let ch = char::from_u32(i as u32);
+            match ch {
+                Some(v) => Value::String(v.to_string()),
+                None => Value::NIL,
+            }
+        }
         _ => Value::NIL,
     };
 

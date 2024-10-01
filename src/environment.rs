@@ -15,7 +15,7 @@ use rust_lisp::{
     interpreter::eval,
     model::{Env, Symbol, Value},
     parser::parse,
-    utils::require_typed_arg,
+    utils::{require_arg, require_typed_arg},
 };
 
 use crate::{
@@ -60,8 +60,6 @@ impl Environment {
                     content_ticks = self.tick_passed / data.display.delay;
                     self.tick_passed %= data.display.delay;
                 };
-                let v = format!("{}", self.tick_passed);
-                data.debug.push(v);
             }
         }
         for _ in 0..content_ticks {
@@ -358,6 +356,17 @@ impl Environment {
         redefine!("is_procedure", "is-procedure");
         redefine!("is_pair", "is-pair");
 
+        ctx.define(
+            Symbol::from("is-integer"),
+            Value::NativeFunc(|_env, args| {
+                let v = require_arg("is-integer", &args, 0)?;
+                Ok(match v {
+                    Value::Int(_) => Value::True,
+                    _ => Value::False,
+                })
+            }),
+        );
+
         redefine!("hash_get", "hash/get");
         redefine!("hash_set", "hash/set");
 
@@ -461,6 +470,10 @@ impl Environment {
                 use lisp::basic::string::*;
                 insert_func!(self, "string/format", format);
                 insert_func!(self, "string/escape", escape);
+            }
+            {
+                use lisp::random::*;
+                insert_func!(self, "random/int", random_int);
             }
         }
         {
