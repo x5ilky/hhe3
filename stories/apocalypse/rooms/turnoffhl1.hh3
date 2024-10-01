@@ -1,0 +1,53 @@
+(delay/set 10)
+---
+MC: "Damn… it’s so dark we can’t even see anything."
+William: "What the… I think that’s a small hoard of zombies!"
+MC: "GOD! WHAT DO WE DO?"
+William: "Drive fast. Go through them"
+MC: "Wha-"
+William: "JUST HIT THE DASH, FULL SEND IT!"
+You run right into a hoard of zombies, and you feel the car tilting…
+MC: "HOW ARE WE TILTI-"
+William: *huffing in a panic* WAIT, WAIT, WAIT. I’M GRABBING THE GUN!
+
+PRESS: `(define gunletter (std/to-ascii (random/int 97 123))) (content/append gunletter) (post)`
+---
+(define countdown (time/now))
+(define ch 
+    (listener/keyboard/char 
+        (lambda (c)
+            (debug "test")
+            (if (== c gunletter) 
+                ((lambda() 
+                    (debug "sdfsdf")
+                    (define diff-time (- (time/now) countdown))
+                    (debug (to-string diff-time))
+                    (listener/clear ch)
+                    ;; (if 
+                    ;;     (< diff-time 2000) (debug "tohlgotgun")
+                    ;;     (if 
+                    ;;         (< diff-time 3000) (debug "tohltoolate")
+                    ;;         (if 
+                    ;;             (< diff-time 4000) (debug "tohltootoolate")
+                    ;;         (>= diff-time 4000) (debug "tohldead")))
+                    ;; )
+
+                    (cond 
+                        ((< diff-time 2000)  (room/set "tohlgotgun"))
+                        ((< diff-time 3000)  (room/set "tohltoolate"))
+                        ((< diff-time 4000)  (room/set "tohltootoolate"))
+                        ((>= diff-time 4000) (room/set "tohldead")))
+                    ;; (cond 
+                    ;;     (< diff-time 2000)  (room/set "tohlgotgun")
+                    ;;     (< diff-time 3000)  (room/set "tohltoolate")
+                    ;;     (< diff-time 4000)  (room/set "tohltootoolate")
+                    ;;     (>= diff-time 4000) (room/set "tohldead"))
+                ))
+            )
+        )
+    )
+)
+;; $c Randomly generate a lowercase character from a-z, variable called "gunletter"
+;; PRESS $passiveb:($setrng:97:123=gunletter):($convert_ascii:gunletter=gunletterascii):($sh_concat=gunletterascii) $onfinishload:($passiveb:($getunixtime=countdown))
+;; $c besides this text, there will be a countdown timer from 5 to 0. The timer is to the nearest 500 MS, so it goes 5 to 4.5 to 4…
+;; $onkeypress:gunletterascii:discardstr=($passiveb:($getunixtime=offset_plc):($sub:offset_plc:countdown=offset):($ifltor:offset:2000=($go=~tohlgotgun)=($ifltor:offset:3000=($go=~tohltoolate)=($ifltor:offset:4000=($go=~tohltootoolate)=($go=~tohldead)))))
