@@ -4,7 +4,7 @@
 (define save-room (room/get))
 (defun r () 
     (reset)
-    (delay/set 20)
+    (delay/set 30)
     (fg/set (color 'white))
     (bg/set (color 'black)))
 

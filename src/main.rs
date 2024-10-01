@@ -277,19 +277,16 @@ fn story_input(ev: Event, environment: &mut Environment) -> Result<()> {
                             ..
                         } = key
                         {
-                            write.options.selected.select_next();
-                            if write.options.selected.selected().unwrap()
-                                >= write.options.options.len()
-                            {
+                            let len = write.options.options.len();
+                            if len != 0 && write.options.selected.selected().is_none() {
                                 write.options.selected.select(Some(0));
+                            } else if let Some(v) = write.options.selected.selected() {
+                                write.options.selected.select(Some((v + len + 1) % len));
                             }
                         } else {
-                            write.options.selected.select_previous();
+                            let len = write.options.options.len();
                             if let Some(v) = write.options.selected.selected() {
-                                if v == (usize::MAX - 1) {
-                                    let len = write.options.options.len();
-                                    write.options.selected.select(Some(len - 1));
-                                }
+                                write.options.selected.select(Some((v + len - 1) % len));
                             }
                         }
                     }

@@ -1,3 +1,17 @@
 ---
-asdfasdf
+William: "HOLY! I GOT IT!"
+William shoots out of the rear window with adrenaline fueled precision
+and eliminates all the zombies just in time. You and William get out
+of the car just in time, with the entire car still being on the road.
+You both take some time to process what just happened. Process the dead
+Zombies.
+Process the near-death experience.
+And nearly even settle to process the entire apocalypse situation,
+but William quickly shouts:
+
+"Dude! Don’t dead zombies attract more live ones? WE GOTTA MOVE BEFORE WE GET INTO ANOTHER SITUATION LIKE THIS!"
+
+You two hurry back into the car and drive back to the bunker safely.
+`(post)`
 ---
+(option/goto "Next" 'stayhomeandrest)

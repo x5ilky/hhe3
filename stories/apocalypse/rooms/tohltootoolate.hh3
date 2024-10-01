@@ -1,0 +1,5 @@
+---
+William: "NO! I GRABBED IT TOO LA-"
+The car tilts off the bridge. Will grabbed it too late.
+
+`(option/action "Retry" (lambda () (deathscreen)))`

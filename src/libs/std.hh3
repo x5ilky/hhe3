@@ -8,8 +8,12 @@
 (defun time/now () 
     (intrinsic 'time))
 
-;;; std/to-ascii
+;;; std/to-ascii (x: number): string
 (defun std/to-ascii (x)
     (if (is-integer x) 
         (intrinsic 'to-ascii x) 
         ()))
+
+;;; string/concat (a: string, b: string): string
+(defun string/concat (a b)
+    (string/format "%s%s" a b))

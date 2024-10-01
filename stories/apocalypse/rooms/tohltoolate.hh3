@@ -1,0 +1,13 @@
+---
+William: "I-I GOT THE GUN!"
+William pulls back the automatic stashed in the car for the apocalypse
+and shoots out the window. Unfortunately, the car was already too tilted
+Before the zombies were dead.
+
+You and William desperately push on the side of the car instinctively to
+somehow try to stop it from tilting, but to no avail. The car tilts off
+Bridge. Will grabbed it too late.
+`(post)`
+---
+
+(option/action "Retry" (lambda () (deathscreen)))

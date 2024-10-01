@@ -1,0 +1,6 @@
+---
+William: "THERE’S TOO MUCH! I CAN’T REACH THE GUN!"
+The car tilts off the bridge.
+`(post)`
+---
+(option/action "Retry" (lambda () (deathscreen)))

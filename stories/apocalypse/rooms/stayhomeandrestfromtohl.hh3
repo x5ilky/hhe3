@@ -1,0 +1,27 @@
+---
+MC: "No, it’s already been a rough day today and I feel I need some well deserved rest."
+MC: "We can get it tomorrow."
+William: "Ok, Good Night!"
+MC: "Good Night."
+
+You and William both rest.
+
+*The next morning*
+
+William: "Wake up!"
+MC: *sleepily* "What?"
+William: "It’s morning! And I cooked breakfast!"
+MC: "Lemme guess, bread with bread with a side dish of bread?"
+William: "Exactly."
+MC: "You wanna just stay here and chill for a while?"
+William: "Sure!"
+MC: "Let's check the news…"
+News Reporter: "Recent citizens report family disappearing mysteriously in the night. The cause of this is still unknown, but every person who has gone missing has gone outside. We still don’t know if they had been kidnapped, or infected. All we know now is that nobody should go out, and if you do, nobody knows what will happen to you."
+William: "Thank god we didn’t go out yesterday."
+MC: "We could have died or gotten you infected!"
+William: "I know, imagine that."
+`(post)`
+---
+
+(option/goto "Next" 'stayhomeandrestmain)
+
