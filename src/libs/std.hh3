@@ -7,3 +7,9 @@
 ;;; returns unix timestamp in millis
 (defun time/now () 
     (intrinsic 'time))
+
+;;; std/to-ascii
+(defun std/to-ascii (x)
+    (if (is-integer x) 
+        (intrinsic 'to-ascii x) 
+        ()))
