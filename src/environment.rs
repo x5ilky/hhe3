@@ -52,7 +52,7 @@ impl Environment {
             let this_room = self.current_room();
             {
                 let data = Arc::clone(&self.data);
-                let mut data = data.write().unwrap();
+                let data = data.read().unwrap();
 
                 let too_far = data.display.displayed_index < this_room.content.len();
                 if data.display.delay != 0 && too_far {
